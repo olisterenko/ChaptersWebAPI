@@ -1,6 +1,14 @@
 using Chapters;
+using Chapters.Entities;
+using Chapters.Extensions;
+using Chapters.Requests;
+using Chapters.Services;
+using Chapters.Services.Interfaces;
+using Chapters.Validators;
 using FluentMigrator.Runner;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -15,10 +23,17 @@ services.AddSwagger();
 
 services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+services.AddAuthorization();
+
+services.AddScoped<IRepository<User>, Repository<User>>();
+services.AddScoped<IUserService, UserService>();
+services.AddScoped<IPasswordHasher, PasswordHasher>();
+services.Configure<PasswordHasherOptions>(configuration.GetSection("PasswordHasherSettings"));
 
 services.AddDbContextWithRepositories(configuration);
 
 services.AddFluentMigrator(configuration);
+services.AddValidators();
 
 var app = builder.Build();
 
@@ -29,12 +44,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 using var scope = app.Services.CreateScope();

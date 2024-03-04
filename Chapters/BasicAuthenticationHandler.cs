@@ -2,6 +2,11 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using Ardalis.Specification;
+using Chapters.Entities;
+using Chapters.Exceptions;
+using Chapters.Services.Interfaces;
+using Chapters.Specifications;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -9,10 +14,17 @@ namespace Chapters;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IRepository<User> _userRepository;
+
     [Obsolete("Obsolete")]
-    public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+    public BasicAuthenticationHandler(IPasswordHasher passwordHasher, IRepository<User> userRepository,
+        IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder,
+        ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
+        _passwordHasher = passwordHasher;
+        _userRepository = userRepository;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -37,9 +49,21 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         }
 
         // Replace this logic with your own authentication mechanism
-        if (username == "user" && password == "pass")
+        User user;
+        try
         {
-            var claims = new[] {
+            user = await _userRepository.FirstAsync(new UserByUsernameSpec(username));
+        }
+        catch (EntityNotFoundException<User> ex)
+        {
+            return AuthenticateResult.Fail("Invalid user or password");
+
+        }
+
+        if (_passwordHasher.VerifyHashedPassword(user.PasswordHash, password))
+        {
+            var claims = new[]
+            {
                 new Claim(ClaimTypes.NameIdentifier, username),
                 new Claim(ClaimTypes.Name, username),
             };

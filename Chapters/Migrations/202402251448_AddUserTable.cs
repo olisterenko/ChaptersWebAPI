@@ -9,7 +9,7 @@ public class AddUserTable : ForwardOnlyMigration
     {
         Create.Table("User")
             .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
-            .WithColumn("Username").AsString(255).NotNullable()
+            .WithColumn("Username").AsString(255).NotNullable().Unique()
             .WithColumn("PasswordHash").AsString(511).NotNullable();
     }
 }
