@@ -23,11 +23,4 @@ public class UsersController : ControllerBase
     {
         await _userService.CreateUser(request);
     }
-
-    [HttpGet("unprotected")]
-    public IActionResult GetUnprotected()
-    {
-        // This endpoint is not protected by authentication
-        return Ok("This endpoint is accessible without authentication.");
-    }
 }
