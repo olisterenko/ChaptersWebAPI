@@ -1,5 +1,4 @@
-﻿using Chapters.Entities;
-using Chapters.Filters;
+﻿using Chapters.Filters;
 using Chapters.Requests;
 using Chapters.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;

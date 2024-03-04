@@ -1,4 +1,5 @@
 ﻿using Chapters;
+using Chapters.Enums;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -17,10 +18,14 @@ public static class DbContextConfiguration
     {
         var connectionString = configuration.GetConnectionString("Postgres");
         var maxDelay = TimeSpan.FromSeconds(1);
-
+        
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        dataSourceBuilder.MapEnums();
+        var dataSource = dataSourceBuilder.Build();
+        
         services.AddDbContext<ApplicationDbContext>((options) =>
         {
-            options.UseNpgsql(connectionString,
+            options.UseNpgsql(dataSource,
                 npgsqlOptions =>
                 {
                     npgsqlOptions.EnableRetryOnFailure(2, maxDelay, RetriedPostgresExceptions);
@@ -29,5 +34,11 @@ public static class DbContextConfiguration
         });
 
         return services;
+    }
+
+    private static NpgsqlDataSourceBuilder MapEnums(this NpgsqlDataSourceBuilder dataSourceBuilder)
+    {
+        dataSourceBuilder.MapEnum<BookStatus>();
+        return dataSourceBuilder;
     }
 }

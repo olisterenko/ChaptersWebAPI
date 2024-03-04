@@ -1,6 +1,5 @@
 using Chapters;
 using Chapters.Extensions;
-using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +22,6 @@ services.AddDbContextWithRepositories(configuration);
 services.AddFluentMigrator(configuration);
 
 services.AddServices();
-services.AddRepositories();
 services.ConfigureSettings(configuration);
 services.AddValidators();
 

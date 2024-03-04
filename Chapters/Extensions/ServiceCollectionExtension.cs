@@ -1,5 +1,4 @@
-﻿using Chapters.Entities;
-using Chapters.Options;
+﻿using Chapters.Options;
 using Chapters.Requests;
 using Chapters.Services;
 using Chapters.Services.Interfaces;
@@ -24,12 +23,6 @@ public static class ServiceCollectionExtension
     public static IServiceCollection ConfigureSettings(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<PasswordHasherOptions>(configuration.GetSection("PasswordHasherSettings"));
-        return services;
-    }
-    
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<IRepository<User>, Repository<User>>();
         return services;
     }
 }
