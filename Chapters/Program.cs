@@ -1,14 +1,7 @@
 using Chapters;
-using Chapters.Entities;
 using Chapters.Extensions;
-using Chapters.Requests;
-using Chapters.Services;
-using Chapters.Services.Interfaces;
-using Chapters.Validators;
 using FluentMigrator.Runner;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -25,14 +18,13 @@ services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 services.AddAuthorization();
 
-services.AddScoped<IRepository<User>, Repository<User>>();
-services.AddScoped<IUserService, UserService>();
-services.AddScoped<IPasswordHasher, PasswordHasher>();
-services.Configure<PasswordHasherOptions>(configuration.GetSection("PasswordHasherSettings"));
-
 services.AddDbContextWithRepositories(configuration);
 
 services.AddFluentMigrator(configuration);
+
+services.AddServices();
+services.AddRepositories();
+services.ConfigureSettings(configuration);
 services.AddValidators();
 
 var app = builder.Build();
@@ -51,8 +43,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-using var scope = app.Services.CreateScope();
-var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-runner.MigrateUp();
+app.MigrateUp();
 
 app.Run();
