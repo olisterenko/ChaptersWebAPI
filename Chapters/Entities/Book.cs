@@ -8,7 +8,7 @@ public class Book : BaseEntity<int>
     public int YearWritten { get; set; }
     public string? Cover { get; set; } = default;
 
-    public List<UserBook> UserBooks { get; set; } = default!;
-    public List<Review> Reviews { get; set; } = default!;
-    public List<Chapter> Chapters { get; set; } = default!;
+    public List<UserBook> UserBooks { get; set; } = new();
+    public List<Review> Reviews { get; set; } = new();
+    public List<Chapter> Chapters { get; set; } = new();
 }

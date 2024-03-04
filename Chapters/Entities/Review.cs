@@ -11,5 +11,5 @@ public class Review : BaseEntity<int>
     public DateTime CreatedAt { get; set; }
     public int Rating { get; set; }
     
-    public List<UserRatingReview> UserRatingReviews { get; set; } = default!;
+    public List<UserRatingReview> UserRatingReviews { get; set; } = new();
 }

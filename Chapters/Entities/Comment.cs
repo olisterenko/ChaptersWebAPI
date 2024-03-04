@@ -11,5 +11,5 @@ public class Comment : BaseEntity<int>
     public DateTime CreatedAt { get; set; }
     public int Rating { get; set; }
     
-    public List<UserRatingComment> UserRatingComments { get; set; } = default!;
+    public List<UserRatingComment> UserRatingComments { get; set; } = new();
 }

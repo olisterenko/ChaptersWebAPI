@@ -6,6 +6,6 @@ public class Chapter : BaseEntity<int>
     public Book Book { get; set; } = default!;
     public string Title { get; set; } = default!;
     
-    public List<UserChapter> UserChapters { get; set; } = default!;
-    public List<Comment> Comments { get; set; } = default!;
+    public List<UserChapter> UserChapters { get; set; } = new();
+    public List<Comment> Comments { get; set; } = new();
 }

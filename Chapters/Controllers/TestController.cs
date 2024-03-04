@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Chapters.Entities;
+using Chapters.Specifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -16,7 +18,7 @@ public class TestController : ControllerBase
     }
 
     [HttpGet("unprotected")]
-    public IActionResult GetUnprotected()
+    public async Task<IActionResult> GetUnprotected()
     {
         // This endpoint is not protected by authentication
         return Ok("This endpoint is accessible without authentication.");
