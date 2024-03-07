@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Chapters.Entities;
+using Chapters.Enums;
 using Chapters.Requests;
 using Chapters.Responses;
 using Chapters.Services.Interfaces;
@@ -21,8 +22,8 @@ public class BooksController
         _bookService = bookService;
     }
 
-    [HttpPost, Authorize]
-    public async Task<GetBookResponse> GetBook(GetBookRequest request)
+    [HttpGet("{bookId}"), Authorize]
+    public async Task<GetBookResponse> GetBook(int bookId)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
         if (username is null)
@@ -30,6 +31,13 @@ public class BooksController
             throw new InvalidOperationException();
         }
 
-        return await _bookService.GetBook(username.Value, request);
+        return await _bookService.GetBook(username.Value, bookId);
+    }
+
+    [HttpGet]
+    public async Task<List<GetBooksResponse>> GetBooksWithUserDetails([FromQuery] BookStatus? bookStatus = null)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+        return await _bookService.GetBooks(new GetBooksRequest{Username = username?.Value, BookStatus = bookStatus});
     }
 }

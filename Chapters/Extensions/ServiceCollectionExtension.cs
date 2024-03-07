@@ -18,6 +18,7 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IBookService, BookService>();
         return services;
     }
     public static IServiceCollection ConfigureSettings(this IServiceCollection services, IConfiguration configuration)

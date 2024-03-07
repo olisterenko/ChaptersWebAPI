@@ -1,4 +1,5 @@
 ﻿using Chapters.Entities;
+using Chapters.Enums;
 using Chapters.Requests;
 using Chapters.Responses;
 using Chapters.Services.Interfaces;
@@ -17,9 +18,9 @@ public class BookService : IBookService
         _bookRepository = bookRepository;
     }
 
-    public async Task<GetBookResponse> GetBook(string username, GetBookRequest bookRequest)
+    public async Task<GetBookResponse> GetBook(string username, int bookId)
     {
-        var book = await _bookRepository.FirstAsync(new BookByIdSpec(bookRequest.BookId));
+        var book = await _bookRepository.FirstAsync(new BookByIdSpec(bookId));
         var user = await _userRepository.FirstAsync(new UserWithBooksSpec(username));
         var userBook = user.UserBooks.First(x => x.BookId == book.Id);
         return new GetBookResponse(
@@ -40,5 +41,34 @@ public class BookService : IBookService
                 ReadDate: DateTime.Today)
             ).ToList()
         );
+    }
+
+    public async Task<List<GetBooksResponse>> GetBooks(GetBooksRequest booksRequest)
+    {
+        List<Book> books;
+        if (booksRequest is { Username: not null, BookStatus: not null })
+        {
+            books = await _bookRepository.ListAsync(new BooksByBookStatusSpec(booksRequest.BookStatus.Value));
+        } 
+        else if (booksRequest.Username is not null)
+        {
+            books = await _bookRepository.ListAsync(new BooksWithUserDetailsOrderedByRatingSpec());
+        }
+        else
+        {
+            books = await _bookRepository.ListAsync(new BooksOrderedByRatingSpec());
+        }
+
+        return books.Select(
+            x => new GetBooksResponse(
+                Id: x.Id,
+                Title: x.Title,
+                Author: x.Author,
+                Rating: x.Rating,
+                Cover: x.Cover,
+                BookStatus: x.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.BookStatus ?? BookStatus.NotStarted,
+                UserRating: x.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.UserRating ?? 0
+            )
+        ).ToList();
     }
 }
