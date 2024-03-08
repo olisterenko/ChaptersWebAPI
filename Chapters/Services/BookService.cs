@@ -22,14 +22,10 @@ public class BookService : IBookService
         if (booksRequest is { Username: not null, BookStatus: not null })
         {
             books = await _bookRepository.ListAsync(new BooksByBookStatusSpec(booksRequest.BookStatus.Value));
-        } 
-        else if (booksRequest.Username is not null)
-        {
-            books = await _bookRepository.ListAsync(new BooksForRatingSpec());
         }
         else
         {
-            books = await _bookRepository.ListAsync(new BooksOrderedByRatingSpec());
+            books = await _bookRepository.ListAsync(new BooksForRatingSpec());
         }
 
         return books.Select(
@@ -37,10 +33,13 @@ public class BookService : IBookService
                 Id: book.Id,
                 Title: book.Title,
                 Author: book.Author,
-                Rating: book.Rating,
                 Cover: book.Cover,
-                BookStatus: book.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.BookStatus ?? BookStatus.NotStarted,
-                UserRating: book.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.UserRating ?? 0
+                Rating: book.UserBooks
+                    .Average(userBook => userBook.UserRating),
+                BookStatus: book.UserBooks
+                    .FirstOrDefault(u => u.User.Username == booksRequest.Username)?.BookStatus ?? BookStatus.NotStarted,
+                UserRating: book.UserBooks
+                    .FirstOrDefault(u => u.User.Username == booksRequest.Username)?.UserRating ?? 0
             )
         ).ToList();
     }

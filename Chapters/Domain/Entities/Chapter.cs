@@ -4,6 +4,9 @@ public class Chapter : BaseEntity<int>
 {
     public int BookId { get; set; }
     public Book Book { get; set; } = default!;
+    
+    public int Number { get; set; }
+
     public string Title { get; set; } = default!;
     
     public List<UserChapter> UserChapters { get; set; } = new();
