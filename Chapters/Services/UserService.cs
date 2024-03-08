@@ -1,4 +1,4 @@
-﻿using Chapters.Entities;
+﻿using Chapters.Domain.Entities;
 using Chapters.Exceptions;
 using Chapters.Requests;
 using Chapters.Services.Interfaces;

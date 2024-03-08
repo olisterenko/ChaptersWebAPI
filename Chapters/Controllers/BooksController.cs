@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
-using Chapters.Entities;
-using Chapters.Enums;
+using Chapters.Domain.Enums;
 using Chapters.Requests;
 using Chapters.Responses;
 using Chapters.Services.Interfaces;
@@ -10,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Chapters.Controllers;
 
 [ApiController]
-[Route("/api/[controller]")]
+[Route("/api/books")]
 public class BooksController
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -20,18 +19,6 @@ public class BooksController
     {
         _httpContextAccessor = httpContextAccessor;
         _bookService = bookService;
-    }
-
-    [HttpGet("{bookId}"), Authorize]
-    public async Task<GetBookResponse> GetBook(int bookId)
-    {
-        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
-        if (username is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        return await _bookService.GetBook(username.Value, bookId);
     }
 
     [HttpGet]

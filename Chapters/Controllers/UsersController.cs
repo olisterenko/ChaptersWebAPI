@@ -7,7 +7,7 @@ namespace Chapters.Controllers;
 
 [ApiController]
 [UserExceptionFilter]
-[Route("/api/[controller]")]
+[Route("/api/users")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -18,7 +18,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task Register(CreateUserRequest request)
+    public async Task SignUp(CreateUserRequest request)
     {
         await _userService.CreateUser(request);
     }

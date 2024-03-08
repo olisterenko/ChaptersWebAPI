@@ -1,4 +1,4 @@
-﻿using Chapters.Enums;
+﻿using Chapters.Domain.Enums;
 
 namespace Chapters.Responses;
 

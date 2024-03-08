@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Chapters.Entities;
+using Chapters.Domain.Entities;
 using Chapters.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

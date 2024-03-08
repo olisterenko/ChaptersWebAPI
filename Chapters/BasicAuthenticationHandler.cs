@@ -3,10 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using Ardalis.Specification;
-using Chapters.Entities;
+using Chapters.Domain.Entities;
 using Chapters.Exceptions;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications;
+using Chapters.Specifications.UserSpecs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -48,13 +49,12 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             return AuthenticateResult.Fail("Invalid Authorization Header");
         }
 
-        // Replace this logic with your own authentication mechanism
         User user;
         try
         {
-            user = await _userRepository.FirstAsync(new UserByUsernameSpec(username));
+            user = await _userRepository.FirstAsync(new UserSpec(username));
         }
-        catch (EntityNotFoundException<User> ex)
+        catch (EntityNotFoundException<User>)
         {
             return AuthenticateResult.Fail("Invalid user or password");
 

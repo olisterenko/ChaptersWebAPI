@@ -1,5 +1,5 @@
 using Chapters;
-using Chapters.Extensions;
+using Chapters.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);

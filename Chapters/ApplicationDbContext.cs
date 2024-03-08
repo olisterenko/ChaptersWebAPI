@@ -1,4 +1,4 @@
-﻿using Chapters.Entities;
+﻿using Chapters.Domain.Entities;
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 

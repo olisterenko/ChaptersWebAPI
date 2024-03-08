@@ -1,5 +1,5 @@
 ﻿using Ardalis.Specification;
-using Chapters.Entities;
+using Chapters.Domain.Entities;
 
 namespace Chapters;
 

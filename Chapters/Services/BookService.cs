@@ -1,46 +1,19 @@
-﻿using Chapters.Entities;
-using Chapters.Enums;
+﻿using Chapters.Domain.Entities;
+using Chapters.Domain.Enums;
 using Chapters.Requests;
 using Chapters.Responses;
 using Chapters.Services.Interfaces;
-using Chapters.Specifications;
+using Chapters.Specifications.BookSpecs;
 
 namespace Chapters.Services;
 
 public class BookService : IBookService
 {
-    private readonly IRepository<User> _userRepository;
     private readonly IRepository<Book> _bookRepository;
 
-    public BookService(IRepository<User> userRepository, IRepository<Book> bookRepository)
+    public BookService(IRepository<Book> bookRepository)
     {
-        _userRepository = userRepository;
         _bookRepository = bookRepository;
-    }
-
-    public async Task<GetBookResponse> GetBook(string username, int bookId)
-    {
-        var book = await _bookRepository.FirstAsync(new BookByIdSpec(bookId));
-        var user = await _userRepository.FirstAsync(new UserWithBooksSpec(username));
-        var userBook = user.UserBooks.First(x => x.BookId == book.Id);
-        return new GetBookResponse(
-            Id: book.Id,
-            Title: book.Title,
-            Rating: book.Rating,
-            Author: book.Author,
-            YearWritten: book.YearWritten,
-            Cover: null,
-            BookStatus: userBook.BookStatus,
-            UserRating: userBook.UserRating,
-            Chapters: book.Chapters.Select(ch => new GetCompactChapterResponse(
-                Id: ch.Id,
-                Title: ch.Title,
-                UserRating: 0,
-                Rating: 0,
-                Status: false,
-                ReadDate: DateTime.Today)
-            ).ToList()
-        );
     }
 
     public async Task<List<GetBooksResponse>> GetBooks(GetBooksRequest booksRequest)
@@ -52,7 +25,7 @@ public class BookService : IBookService
         } 
         else if (booksRequest.Username is not null)
         {
-            books = await _bookRepository.ListAsync(new BooksWithUserDetailsOrderedByRatingSpec());
+            books = await _bookRepository.ListAsync(new BooksForRatingSpec());
         }
         else
         {
@@ -60,14 +33,14 @@ public class BookService : IBookService
         }
 
         return books.Select(
-            x => new GetBooksResponse(
-                Id: x.Id,
-                Title: x.Title,
-                Author: x.Author,
-                Rating: x.Rating,
-                Cover: x.Cover,
-                BookStatus: x.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.BookStatus ?? BookStatus.NotStarted,
-                UserRating: x.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.UserRating ?? 0
+            book => new GetBooksResponse(
+                Id: book.Id,
+                Title: book.Title,
+                Author: book.Author,
+                Rating: book.Rating,
+                Cover: book.Cover,
+                BookStatus: book.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.BookStatus ?? BookStatus.NotStarted,
+                UserRating: book.UserBooks.FirstOrDefault(u => u.User.Username == booksRequest.Username)?.UserRating ?? 0
             )
         ).ToList();
     }

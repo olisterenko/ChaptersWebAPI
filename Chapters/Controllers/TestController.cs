@@ -1,12 +1,11 @@
-﻿using Chapters.Entities;
-using Chapters.Specifications;
+﻿using Chapters.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
 
 [ApiController]
-[Route("/api/[controller]")]
+[Route("/api/test")]
 public class TestController : ControllerBase
 {
     [HttpPost]

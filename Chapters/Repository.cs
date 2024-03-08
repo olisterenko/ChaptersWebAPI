@@ -1,6 +1,6 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
-using Chapters.Entities;
+using Chapters.Domain.Entities;
 using Chapters.Exceptions;
 using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
