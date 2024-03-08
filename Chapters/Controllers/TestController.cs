@@ -9,7 +9,7 @@ namespace Chapters.Controllers;
 [Route("/api/[controller]")]
 public class TestController : ControllerBase
 {
-    [HttpGet]
+    [HttpPost]
     [Authorize] // Require authorization for this endpoint
     public IActionResult Get()
     {

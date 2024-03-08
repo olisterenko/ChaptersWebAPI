@@ -17,7 +17,11 @@ public class UserBookConfig : IEntityTypeConfiguration<UserBook>
             .HasOne(ub => ub.User)
             .WithMany(ub => ub.UserBooks)
             .HasForeignKey(ub => ub.UserId);
-
+            
+        builder
+            .Property(x => x.BookStatus)
+            .HasConversion<int>();
+        
         builder.ToTable("UserBooks");
     }
 }

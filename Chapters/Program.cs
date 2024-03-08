@@ -24,6 +24,7 @@ services.AddFluentMigrator(configuration);
 services.AddServices();
 services.ConfigureSettings(configuration);
 services.AddValidators();
+services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 

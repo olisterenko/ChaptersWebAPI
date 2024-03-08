@@ -5,5 +5,6 @@ public enum BookStatus
     NotStarted,
     Reading,
     WillRead,
-    Finished
+    Finished,
+    StopReading
 }
