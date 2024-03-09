@@ -26,8 +26,9 @@ public class ChapterService : IChapterService
                 Id: chapter.Id,
                 Number: chapter.Number,
                 Title: chapter.Title,
-                Rating: chapter.UserChapters
-                    .Average(userChapter => userChapter.UserRating),
+                Rating: chapter.UserChapters.Count != 0
+                    ? chapter.UserChapters.Average(userChapter => userChapter.UserRating)
+                    : 0.0,
                 IsRead: chapter.UserChapters
                     .FirstOrDefault(u => u.User.Username == chaptersRequest.Username)?.IsRead ?? false,
                 UserRating: chapter.UserChapters
