@@ -3,16 +3,19 @@ using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.ReviewSpecs;
+using Chapters.Specifications.UserBookSpecs;
 
 namespace Chapters.Services;
 
 public class ReviewService : IReviewService
 {
     private readonly IRepository<Review> _reviewRepository;
+    private readonly IRepository<UserBook> _userBookRepository;
 
-    public ReviewService(IRepository<Review> reviewRepository)
+    public ReviewService(IRepository<Review> reviewRepository, IRepository<UserBook> userBookRepository)
     {
         _reviewRepository = reviewRepository;
+        _userBookRepository = userBookRepository;
     }
 
     public async Task<List<GetReviewResponse>> GetChapters(GetReviewsRequest reviewsRequest)
@@ -20,12 +23,17 @@ public class ReviewService : IReviewService
         var reviews = await _reviewRepository
             .ListAsync(new ReviewWithUserRatingSpec(reviewsRequest.BookId));
 
-        return reviews
-            .Select(review => GetReviewResponse(reviewsRequest, review))
-            .ToList();
+        var responses = new List<GetReviewResponse>();
+        foreach(var review in reviews)
+        {
+            var response = await GetReviewResponse(reviewsRequest, review);
+            responses.Add(response);
+        }
+
+        return responses;
     }
 
-    private GetReviewResponse GetReviewResponse(GetReviewsRequest reviewsRequest, Review review)
+    private async Task<GetReviewResponse> GetReviewResponse(GetReviewsRequest reviewsRequest, Review review)
     {
         var userRating = 0;
         if (reviewsRequest.Username is not null)
@@ -35,10 +43,13 @@ public class ReviewService : IReviewService
                 .UserRating ?? 0;
         }
 
+        var userBook = await _userBookRepository.FirstOrDefaultAsync(new UserBookSpec(review.AuthorId, review.BookId));
+
         return new GetReviewResponse(
             Id: review.Id,
             AuthorId: review.AuthorId,
             AuthorUsername: review.Author.Username,
+            AuthorBookRating: userBook?.UserRating ?? 0,
             Title: review.Title,
             Text: review.Text,
             Rating: review.UserRatingReviews.Sum(ur => ur.UserRating),
