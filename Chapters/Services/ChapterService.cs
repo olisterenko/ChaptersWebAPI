@@ -21,19 +21,34 @@ public class ChapterService : IChapterService
             .ListAsync(new ChaptersWithUserChaptersOrderedSpec(chaptersRequest.BookId));
 
 
-        return chapters.Select(
-            chapter => new GetChapterResponse(
-                Id: chapter.Id,
-                Number: chapter.Number,
-                Title: chapter.Title,
-                Rating: chapter.UserChapters.Count != 0
-                    ? chapter.UserChapters.Average(userChapter => userChapter.UserRating)
-                    : 0.0,
-                IsRead: chapter.UserChapters
-                    .FirstOrDefault(u => u.User.Username == chaptersRequest.Username)?.IsRead ?? false,
-                UserRating: chapter.UserChapters
-                    .FirstOrDefault(u => u.User.Username == chaptersRequest.Username)?.UserRating ?? 0
-            )
-        ).ToList();
+        return chapters.Select(chapter => GetChapterResponse(chaptersRequest, chapter))
+            .ToList();
+    }
+
+    private GetChapterResponse GetChapterResponse(GetChaptersRequest chaptersRequest, Chapter chapter)
+    {
+        var isRead = false;
+        var userRating = 0;
+        if (chaptersRequest.Username is not null)
+        {
+            isRead = chapter.UserChapters
+                .FirstOrDefault(u => u.User.Username == chaptersRequest.Username)?
+                .IsRead ?? false;
+
+            userRating = chapter.UserChapters
+                .FirstOrDefault(u => u.User.Username == chaptersRequest.Username)?
+                .UserRating ?? 0;
+        }
+
+        return new GetChapterResponse(
+            Id: chapter.Id,
+            Number: chapter.Number,
+            Title: chapter.Title,
+            Rating: chapter.UserChapters.Count != 0
+                ? chapter.UserChapters.Average(userChapter => userChapter.UserRating)
+                : 0.0,
+            IsRead: isRead,
+            UserRating: userRating
+        );
     }
 }

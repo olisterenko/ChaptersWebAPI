@@ -8,7 +8,7 @@ public sealed class ChaptersWithUserChaptersOrderedSpec : Specification<Chapter>
     public ChaptersWithUserChaptersOrderedSpec(int bookId)
     {
         Query
-            .Include(c => c.UserChapters)
+            .Include(c => c.UserChapters).ThenInclude(uc => uc.User)
             .Where(c => c.BookId == bookId)
             .OrderBy(c => c.Number);
     }
