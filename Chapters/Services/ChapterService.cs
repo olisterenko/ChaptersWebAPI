@@ -3,6 +3,7 @@ using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.ChapterSpecs;
+using Chapters.Specifications.UserChapterSpecs;
 using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
@@ -46,6 +47,15 @@ public class ChapterService : IChapterService
         };
 
         await _userChapterRepository.AddAsync(userChapter);
+    }
+
+    public async Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(unmarkChapterRequest.Username));
+        var chapter = await _userChapterRepository
+            .FirstAsync(new UserChapterSpec(user.Id, unmarkChapterRequest.ChapterId));
+        
+        await _userChapterRepository.DeleteAsync(chapter);
     }
 
     private GetChapterResponse GetChapterResponse(GetChaptersRequest chaptersRequest, Chapter chapter)

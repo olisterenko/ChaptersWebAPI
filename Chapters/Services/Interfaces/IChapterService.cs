@@ -7,4 +7,5 @@ public interface IChapterService
 {
     Task<List<GetChapterResponse>> GetChapters(GetChaptersRequest chaptersRequest);
     Task MarkChapter(MarkChapterRequest markChapterRequest);
+    Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest);
 }

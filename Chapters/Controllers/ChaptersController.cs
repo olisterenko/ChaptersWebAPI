@@ -46,4 +46,18 @@ public class ChaptersController
             }
         );
     }
+    
+    [HttpDelete("{chapterId:int}")]
+    public async Task UnmarkChapter(int chapterId)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _chapterService.UnmarkChapter(
+            new UnmarkChapterRequest
+            {
+                Username = username!.Value,
+                ChapterId = chapterId
+            }
+        );
+    }
 }
