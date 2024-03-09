@@ -19,7 +19,7 @@ public class ChaptersController
         _chapterService = chapterService;
     }
 
-    [HttpGet("/{bookId}")]
+    [HttpGet("{bookId}")]
     public async Task<List<GetChapterResponse>> GetChapters(int bookId)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
