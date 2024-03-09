@@ -1,4 +1,4 @@
-﻿using Chapters.Requests;
+﻿using Chapters.Dto.Requests;
 using Chapters.Validators;
 using FluentValidation;
 

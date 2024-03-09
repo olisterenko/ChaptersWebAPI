@@ -1,6 +1,6 @@
 ﻿using Chapters.Domain.Enums;
 
-namespace Chapters.Requests;
+namespace Chapters.Dto.Requests;
 
 public class GetBooksRequest
 {

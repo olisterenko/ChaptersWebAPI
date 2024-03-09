@@ -1,4 +1,4 @@
-﻿namespace Chapters.Responses;
+﻿namespace Chapters.Dto.Responses;
 
 public sealed record GetChapterResponse(
     int Id,

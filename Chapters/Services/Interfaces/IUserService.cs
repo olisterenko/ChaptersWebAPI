@@ -1,4 +1,4 @@
-﻿using Chapters.Requests;
+﻿using Chapters.Dto.Requests;
 
 namespace Chapters.Services.Interfaces;
 

@@ -1,6 +1,6 @@
 ﻿using Chapters.Domain.Enums;
 
-namespace Chapters.Responses;
+namespace Chapters.Dto.Responses;
 
 public sealed record GetBooksResponse(
     int Id,

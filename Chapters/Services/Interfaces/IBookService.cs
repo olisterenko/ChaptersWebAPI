@@ -1,5 +1,5 @@
-﻿using Chapters.Requests;
-using Chapters.Responses;
+﻿using Chapters.Dto.Requests;
+using Chapters.Dto.Responses;
 
 namespace Chapters.Services.Interfaces;
 

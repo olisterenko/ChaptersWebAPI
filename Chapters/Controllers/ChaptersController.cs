@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using Chapters.Requests;
-using Chapters.Responses;
+using Chapters.Dto.Requests;
+using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

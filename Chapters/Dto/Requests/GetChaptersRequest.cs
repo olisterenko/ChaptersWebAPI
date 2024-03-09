@@ -1,4 +1,4 @@
-﻿namespace Chapters.Requests;
+﻿namespace Chapters.Dto.Requests;
 
 public sealed class GetChaptersRequest
 {

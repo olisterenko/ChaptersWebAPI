@@ -1,5 +1,5 @@
-﻿using Chapters.Filters;
-using Chapters.Requests;
+﻿using Chapters.Dto.Requests;
+using Chapters.Filters;
 using Chapters.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

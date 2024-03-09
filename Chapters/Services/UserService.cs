@@ -1,6 +1,6 @@
 ﻿using Chapters.Domain.Entities;
+using Chapters.Dto.Requests;
 using Chapters.Exceptions;
-using Chapters.Requests;
 using Chapters.Services.Interfaces;
 
 namespace Chapters.Services;

@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <Folder Include="Domain\" />
+      <Folder Include="Dto\" />
       <Folder Include="Infrastructure\" />
     </ItemGroup>
 

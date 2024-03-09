@@ -1,9 +1,8 @@
 ﻿using System.Security.Claims;
 using Chapters.Domain.Enums;
-using Chapters.Requests;
-using Chapters.Responses;
+using Chapters.Dto.Requests;
+using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
