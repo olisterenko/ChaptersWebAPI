@@ -12,6 +12,7 @@ public static class ServicesConfiguration
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IBookService, BookService>();
         services.AddScoped<IChapterService, ChapterService>();
+        services.AddScoped<IReviewService, ReviewService>();
         return services;
     }
 }
