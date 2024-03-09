@@ -8,8 +8,8 @@ public class Comment : BaseEntity<int>
     public int ChapterId { get; set; }
     public Chapter Chapter { get; set; } = default!;
     
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
     public int Rating { get; set; }
     
-    public List<UserRatingComment> UserRatingComments { get; set; } = new();
+    public List<UserRatingComment> UserRatingComments { get; set; } = [];
 }

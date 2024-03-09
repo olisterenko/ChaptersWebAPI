@@ -12,7 +12,7 @@ public class Review : BaseEntity<int>
     public User Author { get; set; } = default!;
 
     public int Rating { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
     public List<UserRatingReview> UserRatingReviews { get; set; } = [];
 }

@@ -42,7 +42,7 @@ public class ChapterService : IChapterService
             ChapterId = markChapterRequest.ChapterId,
             UserId = user.Id,
             IsRead = true,
-            ReadTime = DateTime.Now
+            ReadTime = DateTimeOffset.UtcNow
         };
 
         await _userChapterRepository.AddAsync(userChapter);

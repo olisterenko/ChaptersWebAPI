@@ -10,5 +10,5 @@ public class UserChapter : BaseEntity<int>
     
     public int UserRating { get; set; }
     public bool IsRead { get; set; }
-    public DateTime ReadTime { get; set; }
+    public DateTimeOffset ReadTime { get; set; }
 }

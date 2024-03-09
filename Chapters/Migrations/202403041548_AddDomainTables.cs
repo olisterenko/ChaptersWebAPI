@@ -29,7 +29,7 @@ public class AddDomainTables : ForwardOnlyMigration {
             .WithColumn("Text").AsString(10000).NotNullable()
             .WithColumn("AuthorId").AsInt32().NotNullable().ForeignKey("User", "Id")
             .WithColumn("Rating").AsInt32().WithDefaultValue(0)
-            .WithColumn("CreatedAt").AsDateTimeOffset().WithDefault(SystemMethods.CurrentDateTime);
+            .WithColumn("CreatedAt").AsDateTimeOffset().WithDefault(SystemMethods.CurrentUTCDateTime);
 
         Create.Table("UserRatingReview")
             .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
@@ -56,7 +56,7 @@ public class AddDomainTables : ForwardOnlyMigration {
             .WithColumn("AuthorId").AsInt32().NotNullable().ForeignKey("User", "Id")
             .WithColumn("Text").AsString(10000).NotNullable()
             .WithColumn("Rating").AsInt32().WithDefaultValue(0)
-            .WithColumn("CreatedAt").AsDateTimeOffset().WithDefault(SystemMethods.CurrentDateTime);
+            .WithColumn("CreatedAt").AsDateTimeOffset().WithDefault(SystemMethods.CurrentUTCDateTime);
         
         Create.Table("UserRatingComment")
             .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()

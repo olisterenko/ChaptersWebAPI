@@ -9,5 +9,5 @@ public record GetReviewResponse(
     string Text,
     int Rating,
     int UserRating,
-    DateTime CreatedAt
+    DateTimeOffset CreatedAt
 );
