@@ -24,7 +24,7 @@ public class ReviewsController
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
-        return await _reviewService.GetChapters(
+        return await _reviewService.GetReviews(
             new GetReviewsRequest
             {
                 Username = username?.Value,

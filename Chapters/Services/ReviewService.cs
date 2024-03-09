@@ -18,7 +18,7 @@ public class ReviewService : IReviewService
         _userBookRepository = userBookRepository;
     }
 
-    public async Task<List<GetReviewResponse>> GetChapters(GetReviewsRequest reviewsRequest)
+    public async Task<List<GetReviewResponse>> GetReviews(GetReviewsRequest reviewsRequest)
     {
         var reviews = await _reviewRepository
             .ListAsync(new ReviewWithUserRatingSpec(reviewsRequest.BookId));
