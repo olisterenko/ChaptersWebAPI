@@ -32,4 +32,12 @@ public class ReviewsController
             }
         );
     }
+    
+    [HttpPost("{bookId:int}")]
+    public async Task PostReview(int bookId, PostReviewRequest postReviewRequest)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _reviewService.PostReview(username!.Value, bookId, postReviewRequest);
+    }
 }

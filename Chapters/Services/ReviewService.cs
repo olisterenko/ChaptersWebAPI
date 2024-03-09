@@ -4,6 +4,7 @@ using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.ReviewSpecs;
 using Chapters.Specifications.UserBookSpecs;
+using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
 
@@ -11,11 +12,16 @@ public class ReviewService : IReviewService
 {
     private readonly IRepository<Review> _reviewRepository;
     private readonly IRepository<UserBook> _userBookRepository;
+    private readonly IRepository<User> _userRepository;
 
-    public ReviewService(IRepository<Review> reviewRepository, IRepository<UserBook> userBookRepository)
+    public ReviewService(
+        IRepository<Review> reviewRepository,
+        IRepository<UserBook> userBookRepository,
+        IRepository<User> userRepository)
     {
         _reviewRepository = reviewRepository;
         _userBookRepository = userBookRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<List<GetReviewResponse>> GetReviews(GetReviewsRequest reviewsRequest)
@@ -31,6 +37,23 @@ public class ReviewService : IReviewService
         }
 
         return responses;
+    }
+
+    public async Task PostReview(string username, int bookId, PostReviewRequest postReviewRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(username));
+
+        var review = new Review
+        {
+            BookId = bookId,
+            Title = postReviewRequest.Title,
+            Text = postReviewRequest.Text,
+            AuthorId = user.Id,
+            Rating = 0,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _reviewRepository.AddAsync(review);
     }
 
     private async Task<GetReviewResponse> GetReviewResponse(GetReviewsRequest reviewsRequest, Review review)
