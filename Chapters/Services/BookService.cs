@@ -35,7 +35,7 @@ public class BookService : IBookService
                 Author: book.Author,
                 Cover: book.Cover,
                 Rating: book.UserBooks.Count != 0
-                    ? book.UserBooks.Average(userChapter => userChapter.UserRating)
+                    ? book.UserBooks.Average(userBook => userBook.UserRating)
                     : 0.0,
                 BookStatus: book.UserBooks
                     .FirstOrDefault(u => u.User.Username == booksRequest.Username)?.BookStatus ?? BookStatus.NotStarted,
