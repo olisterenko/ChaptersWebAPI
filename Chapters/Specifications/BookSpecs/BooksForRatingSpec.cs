@@ -10,6 +10,6 @@ public sealed class BooksForRatingSpec : Specification<Book>
         Query
             .OrderByDescending(x => x.Rating)
             .Take(500)
-            .Include(x => x.UserBooks);
+            .Include(x => x.UserBooks).ThenInclude(ub => ub.User);
     }
 }
