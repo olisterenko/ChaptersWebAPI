@@ -22,6 +22,6 @@ public class UserBookConfig : IEntityTypeConfiguration<UserBook>
             .Property(x => x.BookStatus)
             .HasConversion<int>();
         
-        builder.ToTable("UserBooks");
+        builder.ToTable("UserBook");
     }
 }

@@ -18,6 +18,6 @@ public class UserChapterConfig : IEntityTypeConfiguration<UserChapter>
             .WithMany(ch => ch.UserChapters)
             .HasForeignKey(uc => uc.ChapterId);
 
-        builder.ToTable("UserChapters");
+        builder.ToTable("UserChapter");
     }
 }
