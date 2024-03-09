@@ -13,6 +13,7 @@ public static class ServicesConfiguration
         services.AddScoped<IBookService, BookService>();
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<ICommentService, CommentService>();
         return services;
     }
 }
