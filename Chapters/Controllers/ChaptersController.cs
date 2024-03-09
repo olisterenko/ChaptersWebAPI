@@ -32,4 +32,18 @@ public class ChaptersController
             }
         );
     }
+    
+    [HttpPost("{chapterId:int}")]
+    public async Task MarkChapter(int chapterId)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _chapterService.MarkChapter(
+            new MarkChapterRequest
+            {
+                Username = username!.Value,
+                ChapterId = chapterId
+            }
+        );
+    }
 }

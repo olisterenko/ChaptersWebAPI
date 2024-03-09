@@ -3,16 +3,24 @@ using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.ChapterSpecs;
+using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
 
 public class ChapterService : IChapterService
 {
     private readonly IRepository<Chapter> _chapterRepository;
+    private readonly IRepository<UserChapter> _userChapterRepository;
+    private readonly IRepository<User> _userRepository;
 
-    public ChapterService(IRepository<Chapter> chapterRepository)
+    public ChapterService(
+        IRepository<Chapter> chapterRepository,
+        IRepository<UserChapter> userChapterRepository,
+        IRepository<User> userRepository)
     {
         _chapterRepository = chapterRepository;
+        _userChapterRepository = userChapterRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<List<GetChapterResponse>> GetChapters(GetChaptersRequest chaptersRequest)
@@ -23,6 +31,21 @@ public class ChapterService : IChapterService
 
         return chapters.Select(chapter => GetChapterResponse(chaptersRequest, chapter))
             .ToList();
+    }
+
+    public async Task MarkChapter(MarkChapterRequest markChapterRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(markChapterRequest.Username));
+
+        var userChapter = new UserChapter
+        {
+            ChapterId = markChapterRequest.ChapterId,
+            UserId = user.Id,
+            IsRead = true,
+            ReadTime = DateTime.Now
+        };
+
+        await _userChapterRepository.AddAsync(userChapter);
     }
 
     private GetChapterResponse GetChapterResponse(GetChaptersRequest chaptersRequest, Chapter chapter)
