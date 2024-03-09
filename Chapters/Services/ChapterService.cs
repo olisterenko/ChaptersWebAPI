@@ -40,12 +40,16 @@ public class ChapterService : IChapterService
                 .UserRating ?? 0;
         }
 
+        var ratingChapters = chapter.UserChapters
+            .Where(ch => ch.UserRating != 0)
+            .ToList();
+
         return new GetChapterResponse(
             Id: chapter.Id,
             Number: chapter.Number,
             Title: chapter.Title,
-            Rating: chapter.UserChapters.Count != 0
-                ? chapter.UserChapters.Average(userChapter => userChapter.UserRating)
+            Rating: ratingChapters.Count != 0
+                ? ratingChapters.Average(userChapter => userChapter.UserRating)
                 : 0.0,
             IsRead: isRead,
             UserRating: userRating
