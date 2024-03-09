@@ -3,6 +3,7 @@ using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.CommentSpecs;
+using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
 
@@ -30,6 +31,22 @@ public class CommentService : ICommentService
         return comments
             .Select(comment => GetCommentResponse(commentRequest, comment))
             .ToList();
+    }
+
+    public async Task PostComment(string username, int chapterId, PostCommentRequest postCommentRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(username));
+
+        var comment = new Comment
+        {
+            ChapterId = chapterId,
+            Text = postCommentRequest.Text,
+            AuthorId = user.Id,
+            Rating = 0,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _commentRepository.AddAsync(comment);
     }
 
     private GetCommentResponse GetCommentResponse(GetCommentRequest reviewsRequest, Comment comment)

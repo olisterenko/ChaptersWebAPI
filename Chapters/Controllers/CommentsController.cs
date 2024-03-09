@@ -33,11 +33,11 @@ public class CommentsController
         );
     }
     
-    /*[HttpPost("{chapterId:int}")]
-    public async Task PostReview(int chapterId, PostReviewRequest postReviewRequest)
+    [HttpPost("{chapterId:int}")]
+    public async Task PostComment(int chapterId, PostCommentRequest postCommentRequest)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
-        await _reviewService.PostReview(username!.Value, bookId, postReviewRequest);
-    }*/
+        await _commentService.PostComment(username!.Value, chapterId, postCommentRequest);
+    }
 }
