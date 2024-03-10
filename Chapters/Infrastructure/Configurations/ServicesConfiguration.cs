@@ -14,6 +14,7 @@ public static class ServicesConfiguration
         services.AddScoped<IChapterService, ChapterService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<ISubscriberService, SubscriberService>();
         return services;
     }
 }
