@@ -23,4 +23,12 @@ public class ActivityController
     {
         return await _userActivityService.GetUserActivities(username);
     }
+    
+    [HttpGet]
+    public async Task<List<GetUserActivityResponse>> GetSubscriptionsActivities()
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+        
+        return await _userActivityService.GetSubscriptionsActivities(username!.Value);
+    }
 }
