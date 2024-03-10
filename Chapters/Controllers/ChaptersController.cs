@@ -60,4 +60,6 @@ public class ChaptersController
             }
         );
     }
+    
+    // TODO: оценивать главы
 }

@@ -26,4 +26,6 @@ public class BooksController
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
         return await _bookService.GetBooks(new GetBooksRequest{Username = username?.Value, BookStatus = bookStatus});
     }
+    
+    // TODO: оценивать книги
 }
