@@ -18,11 +18,9 @@ public class ActivityController
         _userActivityService = userActivityService;
     }
 
-    [HttpGet]
-    public async Task<List<GetUserActivityResponse>> GetUserActivities()
+    [HttpGet("{username}")]
+    public async Task<List<GetUserActivityResponse>> GetUserActivities(string username)
     {
-        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
-        
-        return await _userActivityService.GetUserActivities(username!.Value);
+        return await _userActivityService.GetUserActivities(username);
     }
 }
