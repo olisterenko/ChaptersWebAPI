@@ -40,4 +40,6 @@ public class ReviewsController
 
         await _reviewService.PostReview(username!.Value, bookId, postReviewRequest);
     }
+    
+    // TODO: менять рейтинг ревью
 }

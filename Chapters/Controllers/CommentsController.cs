@@ -40,4 +40,6 @@ public class CommentsController
 
         await _commentService.PostComment(username!.Value, chapterId, postCommentRequest);
     }
+    
+    // TODO: менять рейтинг комментария
 }

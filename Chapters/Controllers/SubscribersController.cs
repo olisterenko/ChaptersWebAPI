@@ -25,4 +25,7 @@ public class SubscribersController
 
         return await _subscriberService.GetSubscriptions(username!.Value);
     }
+    
+    // TODO: уметь подписываться
+    // TODO: уметь отписываться
 }

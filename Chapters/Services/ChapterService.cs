@@ -47,6 +47,8 @@ public class ChapterService : IChapterService
         };
 
         await _userChapterRepository.AddAsync(userChapter);
+        
+        // TODO: проверять количество прочитанных и закрывать книгу
     }
 
     public async Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest)
