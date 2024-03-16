@@ -33,7 +33,7 @@ public class ReviewsController
         );
     }
     
-    [HttpPost("{bookId:int}")]
+    [HttpPost("{bookId:int}")] // TODO: убрать в тело
     public async Task PostReview(int bookId, PostReviewRequest postReviewRequest)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);

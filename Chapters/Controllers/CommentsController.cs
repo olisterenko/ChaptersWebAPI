@@ -33,7 +33,7 @@ public class CommentsController
         );
     }
     
-    [HttpPost("{chapterId:int}")]
+    [HttpPost("{chapterId:int}")] // TODO: убрать в тело
     public async Task PostComment(int chapterId, PostCommentRequest postCommentRequest)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
