@@ -27,6 +27,8 @@ public class BooksController
         return await _bookService.GetBooks(new GetBooksRequest{Username = username?.Value, BookStatus = bookStatus});
     }
     
+    // TODO: информация об одной книге
+    
     // TODO: менять статус
     
     // TODO: оценивать книги
