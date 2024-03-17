@@ -41,5 +41,7 @@ public class ReviewsController
         await _reviewService.PostReview(username!.Value, bookId, postReviewRequest);
     }
     
+    // TODO: получать все рецензии одного пользователя [HttpPost("user")]
+
     // TODO: менять рейтинг ревью
 }

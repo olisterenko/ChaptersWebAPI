@@ -41,6 +41,6 @@ public class CommentsController
         await _commentService.PostComment(username!.Value, chapterId, postCommentRequest);
     }
 
-    // TODO: получать все комментарии одного пользователя
+    // TODO: получать все комментарии одного пользователя [HttpPost("user")]
     // TODO: менять рейтинг комментария
 }
