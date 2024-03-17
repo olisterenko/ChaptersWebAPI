@@ -18,12 +18,10 @@ public class SubscribersController
         _subscriberService = subscriberService;
     }
     
-    [HttpGet]
-    public async Task<List<GetSubscriptionsResponse>> GetSubscriptions()
+    [HttpGet("{username}")]
+    public async Task<List<GetSubscriptionsResponse>> GetSubscriptions(string username)
     {
-        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
-
-        return await _subscriberService.GetSubscriptions(username!.Value);
+        return await _subscriberService.GetSubscriptions(username);
     }
     
     // TODO: уметь подписываться

@@ -19,7 +19,7 @@ public class CommentsController
         _commentService = commentService;
     }
 
-    [HttpGet("{chapterId}")]
+    [HttpGet("{chapterId:int}")]
     public async Task<List<GetCommentResponse>> GetComments(int chapterId)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
