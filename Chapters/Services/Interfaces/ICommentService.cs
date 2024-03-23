@@ -8,4 +8,5 @@ public interface ICommentService
     Task<List<GetCommentResponse>> GetComments(GetCommentRequest commentRequest);
     Task PostComment(string username, PostCommentRequest postCommentRequest);
     Task<List<GetUserCommentResponse>> GetUserComments(GetUserCommentsRequest getUserCommentsRequest);
+    Task RateComment(string username, int commentId, bool isPositive);
 }

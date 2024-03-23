@@ -32,7 +32,7 @@ public class CommentsController
             }
         );
     }
-    
+
     [HttpPost]
     public async Task PostComment(PostCommentRequest postCommentRequest)
     {
@@ -46,7 +46,19 @@ public class CommentsController
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
-        return await _commentService.GetUserComments(new GetUserCommentsRequest{Author = author, Username = username?.Value});
+        return await _commentService.GetUserComments(
+            new GetUserCommentsRequest
+            {
+                Author = author,
+                Username = username?.Value
+            });
     }
-    // TODO: менять рейтинг комментария
+
+    [HttpPost("{commentId:int}")]
+    public async Task RateComment(int commentId, [FromBody] bool isPositive)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _commentService.RateComment(username!.Value, commentId, isPositive);
+    }
 }

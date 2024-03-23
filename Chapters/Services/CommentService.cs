@@ -3,6 +3,7 @@ using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.CommentSpecs;
+using Chapters.Specifications.UserRatingCommentSpecs;
 using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
@@ -11,13 +12,16 @@ public class CommentService : ICommentService
 {
     private readonly IRepository<Comment> _commentRepository;
     private readonly IRepository<User> _userRepository;
+    private readonly IRepository<UserRatingComment> _userRatingCommentRepository;
 
     public CommentService(
         IRepository<Comment> commentRepository,
-        IRepository<User> userRepository)
+        IRepository<User> userRepository,
+        IRepository<UserRatingComment> userRatingCommentRepository)
     {
         _commentRepository = commentRepository;
         _userRepository = userRepository;
+        _userRatingCommentRepository = userRatingCommentRepository;
     }
 
     public async Task<List<GetCommentResponse>> GetComments(GetCommentRequest commentRequest)
@@ -56,6 +60,30 @@ public class CommentService : ICommentService
             .ToList();
     }
 
+    public async Task RateComment(string username, int commentId, bool isPositive)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(username));
+
+        var userRatingComment =
+            await _userRatingCommentRepository.FirstOrDefaultAsync(new UserRatingCommentSpec(user.Id, commentId));
+
+        if (userRatingComment is null)
+        {
+            userRatingComment = new UserRatingComment
+            {
+                CommentId = commentId,
+                UserId = user.Id,
+                UserRating = isPositive ? 1 : -1
+            };
+
+            await _userRatingCommentRepository.AddAsync(userRatingComment);
+        }
+
+        userRatingComment.UserRating = isPositive ? 1 : -1;
+
+        await _userRatingCommentRepository.SaveChangesAsync();
+    }
+
     private GetCommentResponse GetCommentResponse(GetCommentRequest reviewsRequest, Comment comment)
     {
         var userRating = 0;
@@ -76,7 +104,7 @@ public class CommentService : ICommentService
             CreatedAt: comment.CreatedAt
         );
     }
-    
+
     private GetUserCommentResponse GetUserCommentResponse(GetUserCommentsRequest reviewsRequest, Comment comment)
     {
         var userRating = 0;
