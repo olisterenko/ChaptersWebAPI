@@ -9,4 +9,5 @@ public interface IBookService
     Task<GetBookResponse> GetBook(GetBookRequest getBookRequest);
     Task ChangeBookStatus(ChangeBookStatusRequest changeBookStatusRequest);
     Task RateBook(RateBookRequest rateBookRequest);
+    Task<List<GetBookResponse>> SearchBooks(SearchBooksRequest searchBooksRequest);
 }

@@ -62,5 +62,11 @@ public class BooksController
             });
     }
 
-    // TODO: поиск
+    [HttpPost]
+    public async Task<List<GetBookResponse>> SearchBooks([FromQuery] string q)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        return await _bookService.SearchBooks(new SearchBooksRequest { Username = username?.Value, Q = q });
+    }
 }

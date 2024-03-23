@@ -123,6 +123,15 @@ public class BookService : IBookService
         await _userBookRepository.SaveChangesAsync();
     }
 
+    public async Task<List<GetBookResponse>> SearchBooks(SearchBooksRequest searchBooksRequest)
+    {
+        var books = await _bookRepository.ListAsync(new BooksForSearchSpec(searchBooksRequest.Q));
+
+        return books
+            .Select(book => GetBookResponse(searchBooksRequest.Username, book))
+            .ToList();
+    }
+
     private static GetBookResponse GetBookResponse(string? username, Book book)
     {
         var bookStatus = BookStatus.NotStarted;
