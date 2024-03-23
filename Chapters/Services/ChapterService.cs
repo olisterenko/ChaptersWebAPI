@@ -101,10 +101,7 @@ public class ChapterService : IChapterService
             userBook.BookStatus = BookStatus.Reading;
             await _userBookRepository.SaveChangesAsync();
 
-            await _activityService.SaveChangeStatusActivity(
-                user.Id,
-                userBook.BookId,
-                userBook.BookStatus);
+            await _activityService.SaveChangeStatusActivity(user.Id, userBook.BookId, userBook.BookStatus);
         }
 
         await _userChapterRepository.DeleteAsync(userChapter);
@@ -129,6 +126,9 @@ public class ChapterService : IChapterService
             };
 
             await _userChapterRepository.AddAsync(userChapter);
+            // TODO: await _activityService.SaveReadChapterActivity(user.Id, userChapter.ChapterId);
+            await _activityService.SaveRateChapterActivity(user.Id, userChapter.ChapterId, userChapter.UserRating);
+
             return;
         }
 
@@ -138,11 +138,12 @@ public class ChapterService : IChapterService
         }
 
         userChapter.UserRating = rateChapterRequest.NewRating;
-
         await _userChapterRepository.SaveChangesAsync();
+
+        await _activityService.SaveRateChapterActivity(user.Id, userChapter.ChapterId, userChapter.UserRating);
     }
 
-    private GetChapterResponse GetChapterResponse(GetChaptersRequest chaptersRequest, Chapter chapter)
+    private static GetChapterResponse GetChapterResponse(GetChaptersRequest chaptersRequest, Chapter chapter)
     {
         var isRead = false;
         var userRating = 0;

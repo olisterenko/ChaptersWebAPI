@@ -3,6 +3,7 @@ using Chapters.Domain.Enums;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.BookSpecs;
+using Chapters.Specifications.ChapterSpecs;
 using Chapters.Specifications.UserSpecs;
 using Chapters.Specifications.UserSubscriberSpecs;
 
@@ -14,17 +15,20 @@ public class UserActivityService : IUserActivityService
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<UserSubscriber> _userSubscriberRepository;
     private readonly IRepository<Book> _bookRepository;
+    private readonly IRepository<Chapter> _chapterRepository;
 
     public UserActivityService(
         IRepository<UserActivity> userActivityRepository,
         IRepository<User> userRepository,
         IRepository<UserSubscriber> userSubscriberRepository,
-        IRepository<Book> bookRepository)
+        IRepository<Book> bookRepository,
+        IRepository<Chapter> chapterRepository)
     {
         _userActivityRepository = userActivityRepository;
         _userRepository = userRepository;
         _userSubscriberRepository = userSubscriberRepository;
         _bookRepository = bookRepository;
+        _chapterRepository = chapterRepository;
     }
 
     public async Task<List<GetUserActivityResponse>> GetUserActivities(string username)
@@ -94,7 +98,7 @@ public class UserActivityService : IUserActivityService
 
         var userActivity = new UserActivity
         {
-            Text = $"ставит {rating} книге {book.Title}.",
+            Text = $"Ставит {rating} книге {book.Title}.",
             UserId = userId,
             CreatedAt = DateTimeOffset.UtcNow
         };
@@ -102,7 +106,21 @@ public class UserActivityService : IUserActivityService
         await _userActivityRepository.AddAsync(userActivity);
     }
 
-    // TODO: оценивание главы
+    public async Task SaveRateChapterActivity(int userId, int chapterId, int rating)
+    {
+        var chapter = await _chapterRepository.FirstAsync(new ChapterSpec(chapterId));
+        var book = await _bookRepository.FirstAsync(new BookSpec(chapter.BookId));
+
+        var userActivity = new UserActivity
+        {
+            Text = $"Ставит {rating} главе {chapter.Title} книги {book.Title}.",
+            UserId = userId,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _userActivityRepository.AddAsync(userActivity);
+    }
+
     // TODO: прочтение главы
     // TODO: написание коммента
     // TODO: написание рецензии
