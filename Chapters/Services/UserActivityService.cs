@@ -150,5 +150,18 @@ public class UserActivityService : IUserActivityService
 
         await _userActivityRepository.AddAsync(userActivity);
     }
-    // TODO: написание рецензии
+
+    public async Task SavePostReviewActivity(int userId, int bookId)
+    {
+        var book = await _bookRepository.FirstAsync(new BookSpec(bookId));
+
+        var userActivity = new UserActivity
+        {
+            Text = $"Пишет рецензию на книгу {book.Title}.",
+            UserId = userId,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _userActivityRepository.AddAsync(userActivity);
+    }
 }

@@ -15,17 +15,20 @@ public class ReviewService : IReviewService
     private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<UserRatingReview> _userRatingReviewRepository;
+    private readonly UserActivityService _activityService;
 
     public ReviewService(
         IRepository<Review> reviewRepository,
         IRepository<UserBook> userBookRepository,
-        IRepository<User> userRepository, 
-        IRepository<UserRatingReview> userRatingReviewRepository)
+        IRepository<User> userRepository,
+        IRepository<UserRatingReview> userRatingReviewRepository,
+        UserActivityService activityService)
     {
         _reviewRepository = reviewRepository;
         _userBookRepository = userBookRepository;
         _userRepository = userRepository;
         _userRatingReviewRepository = userRatingReviewRepository;
+        _activityService = activityService;
     }
 
     public async Task<List<GetReviewResponse>> GetReviews(GetReviewsRequest reviewsRequest)
@@ -34,7 +37,7 @@ public class ReviewService : IReviewService
             .ListAsync(new ReviewWithUserRatingSpec(reviewsRequest.BookId));
 
         var responses = new List<GetReviewResponse>();
-        foreach(var review in reviews)
+        foreach (var review in reviews)
         {
             var response = await GetReviewResponse(reviewsRequest, review);
             responses.Add(response);
@@ -58,6 +61,7 @@ public class ReviewService : IReviewService
         };
 
         await _reviewRepository.AddAsync(review);
+        await _activityService.SavePostReviewActivity(user.Id, review.BookId);
     }
 
     public async Task<List<GetUserReviewResponse>> GetUserReviews(GetUserReviewRequest getUserReviewRequest)
@@ -66,7 +70,7 @@ public class ReviewService : IReviewService
             .ListAsync(new ReviewWithUserRatingSpec(getUserReviewRequest.Author));
 
         var responses = new List<GetUserReviewResponse>();
-        foreach(var review in reviews)
+        foreach (var review in reviews)
         {
             var response = await GetUserReviewResponse(getUserReviewRequest, review);
             responses.Add(response);
@@ -123,7 +127,7 @@ public class ReviewService : IReviewService
             CreatedAt: review.CreatedAt
         );
     }
-    
+
     private async Task<GetUserReviewResponse> GetUserReviewResponse(GetUserReviewRequest reviewsRequest, Review review)
     {
         var userRating = 0;
