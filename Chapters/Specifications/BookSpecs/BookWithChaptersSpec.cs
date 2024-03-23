@@ -3,7 +3,7 @@ using Chapters.Domain.Entities;
 
 namespace Chapters.Specifications.BookSpecs;
 
-public sealed class BookWithChaptersSpec : Specification<Book>
+public sealed class BookWithChaptersSpec : Specification<Book>, ISingleResultSpecification<Book>
 {
     public BookWithChaptersSpec(int bookId)
     {

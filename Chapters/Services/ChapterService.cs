@@ -1,8 +1,10 @@
 ﻿using Chapters.Domain.Entities;
+using Chapters.Domain.Enums;
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.ChapterSpecs;
+using Chapters.Specifications.UserBookSpecs;
 using Chapters.Specifications.UserChapterSpecs;
 using Chapters.Specifications.UserSpecs;
 
@@ -10,15 +12,18 @@ namespace Chapters.Services;
 
 public class ChapterService : IChapterService
 {
+    private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<Chapter> _chapterRepository;
     private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
 
     public ChapterService(
+        IRepository<UserBook> userBookRepository,
         IRepository<Chapter> chapterRepository,
         IRepository<UserChapter> userChapterRepository,
         IRepository<User> userRepository)
     {
+        _userBookRepository = userBookRepository;
         _chapterRepository = chapterRepository;
         _userChapterRepository = userChapterRepository;
         _userRepository = userRepository;
@@ -36,7 +41,7 @@ public class ChapterService : IChapterService
 
     public async Task MarkChapter(MarkChapterRequest markChapterRequest)
     {
-        var user = await _userRepository.FirstAsync(new UserSpec(markChapterRequest.Username));
+        var user = await _userRepository.FirstAsync(new UserWithChaptersSpec(markChapterRequest.Username));
 
         var userChapter = new UserChapter
         {
@@ -47,9 +52,33 @@ public class ChapterService : IChapterService
         };
 
         await _userChapterRepository.AddAsync(userChapter);
-        
-        // TODO: проверять количество прочитанных и закрывать книгу
-        // TODO: если хоть одна серия отмечена, то UserBook
+
+        var chapter = await _chapterRepository.GetByIdAsync(markChapterRequest.ChapterId);
+        var userBook = await _userBookRepository
+            .FirstOrDefaultAsync(new UserBookWithBookSpec(user.Id, chapter.BookId));
+
+        if (userBook is null)
+        {
+            userBook = new UserBook
+            {
+                BookId = chapter.BookId,
+                UserId = user.Id,
+                BookStatus = BookStatus.Reading
+            };
+
+            await _userBookRepository.AddAsync(userBook);
+        }
+
+        var readChapters = user.UserChapters
+            .Where(uc => uc.Chapter.BookId == chapter.BookId)
+            .ToList();
+
+        if (readChapters.Count == userBook.Book.Chapters.Count)
+        {
+            userBook.BookStatus = BookStatus.Finished;
+
+            await _userBookRepository.SaveChangesAsync();
+        }
     }
 
     public async Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest)
