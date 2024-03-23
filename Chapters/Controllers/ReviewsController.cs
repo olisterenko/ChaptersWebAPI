@@ -41,7 +41,18 @@ public class ReviewsController
         await _reviewService.PostReview(username!.Value, postReviewRequest);
     }
     
-    // TODO: получать все рецензии одного пользователя [HttpPost("user")]
+    [HttpGet("user")]
+    public async Task<List<GetUserReviewResponse>> GetUserReviews([FromBody] string author)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        return await _reviewService.GetUserReviews(
+            new GetUserReviewRequest
+            {
+                Author = author,
+                Username = username?.Value
+            });
+    }
 
     // TODO: менять рейтинг ревью
 }

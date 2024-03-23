@@ -56,6 +56,21 @@ public class ReviewService : IReviewService
         await _reviewRepository.AddAsync(review);
     }
 
+    public async Task<List<GetUserReviewResponse>> GetUserReviews(GetUserReviewRequest getUserReviewRequest)
+    {
+        var reviews = await _reviewRepository
+            .ListAsync(new ReviewWithUserRatingSpec(getUserReviewRequest.Author));
+
+        var responses = new List<GetUserReviewResponse>();
+        foreach(var review in reviews)
+        {
+            var response = await GetUserReviewResponse(getUserReviewRequest, review);
+            responses.Add(response);
+        }
+
+        return responses;
+    }
+
     private async Task<GetReviewResponse> GetReviewResponse(GetReviewsRequest reviewsRequest, Review review)
     {
         var userRating = 0;
@@ -78,6 +93,33 @@ public class ReviewService : IReviewService
             Rating: review.UserRatingReviews.Sum(ur => ur.UserRating),
             UserRating: userRating,
             CreatedAt: review.CreatedAt
+        );
+    }
+    
+    private async Task<GetUserReviewResponse> GetUserReviewResponse(GetUserReviewRequest reviewsRequest, Review review)
+    {
+        var userRating = 0;
+        if (reviewsRequest.Username is not null)
+        {
+            userRating = review.UserRatingReviews
+                .FirstOrDefault(u => u.User.Username == reviewsRequest.Username)?
+                .UserRating ?? 0;
+        }
+
+        var userBook = await _userBookRepository.FirstOrDefaultAsync(new UserBookSpec(review.AuthorId, review.BookId));
+
+        return new GetUserReviewResponse(
+            Id: review.Id,
+            AuthorId: review.AuthorId,
+            AuthorUsername: review.Author.Username,
+            AuthorBookRating: userBook?.UserRating ?? 0,
+            Title: review.Title,
+            Text: review.Text,
+            Rating: review.UserRatingReviews.Sum(ur => ur.UserRating),
+            UserRating: userRating,
+            CreatedAt: review.CreatedAt,
+            BookId: review.BookId,
+            BookTitle: review.Book.Title
         );
     }
 }
