@@ -33,12 +33,12 @@ public class CommentsController
         );
     }
     
-    [HttpPost("{chapterId:int}")] // TODO: убрать в тело
-    public async Task PostComment(int chapterId, PostCommentRequest postCommentRequest)
+    [HttpPost]
+    public async Task PostComment(PostCommentRequest postCommentRequest)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
-        await _commentService.PostComment(username!.Value, chapterId, postCommentRequest);
+        await _commentService.PostComment(username!.Value, postCommentRequest);
     }
 
     // TODO: получать все комментарии одного пользователя [HttpPost("user")]

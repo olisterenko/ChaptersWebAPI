@@ -39,13 +39,13 @@ public class ReviewService : IReviewService
         return responses;
     }
 
-    public async Task PostReview(string username, int bookId, PostReviewRequest postReviewRequest)
+    public async Task PostReview(string username, PostReviewRequest postReviewRequest)
     {
         var user = await _userRepository.FirstAsync(new UserSpec(username));
 
         var review = new Review
         {
-            BookId = bookId,
+            BookId = postReviewRequest.BookId,
             Title = postReviewRequest.Title,
             Text = postReviewRequest.Text,
             AuthorId = user.Id,

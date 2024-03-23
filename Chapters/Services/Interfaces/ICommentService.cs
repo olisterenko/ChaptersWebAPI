@@ -6,5 +6,5 @@ namespace Chapters.Services.Interfaces;
 public interface ICommentService
 {
     Task<List<GetCommentResponse>> GetComments(GetCommentRequest commentRequest);
-    Task PostComment(string username, int chapterId, PostCommentRequest postCommentRequest);
+    Task PostComment(string username, PostCommentRequest postCommentRequest);
 }

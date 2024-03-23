@@ -6,5 +6,5 @@ namespace Chapters.Services.Interfaces;
 public interface IReviewService
 {
     Task<List<GetReviewResponse>> GetReviews(GetReviewsRequest reviewsRequest);
-    Task PostReview(string username, int bookId, PostReviewRequest postReviewRequest);
+    Task PostReview(string username, PostReviewRequest postReviewRequest);
 }

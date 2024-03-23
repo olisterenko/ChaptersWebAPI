@@ -10,16 +10,13 @@ namespace Chapters.Services;
 public class CommentService : ICommentService
 {
     private readonly IRepository<Comment> _commentRepository;
-    private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
 
     public CommentService(
         IRepository<Comment> commentRepository,
-        IRepository<UserChapter> userChapterRepository,
         IRepository<User> userRepository)
     {
         _commentRepository = commentRepository;
-        _userChapterRepository = userChapterRepository;
         _userRepository = userRepository;
     }
 
@@ -33,13 +30,13 @@ public class CommentService : ICommentService
             .ToList();
     }
 
-    public async Task PostComment(string username, int chapterId, PostCommentRequest postCommentRequest)
+    public async Task PostComment(string username, PostCommentRequest postCommentRequest)
     {
         var user = await _userRepository.FirstAsync(new UserSpec(username));
 
         var comment = new Comment
         {
-            ChapterId = chapterId,
+            ChapterId = postCommentRequest.ChapterId,
             Text = postCommentRequest.Text,
             AuthorId = user.Id,
             Rating = 0,
