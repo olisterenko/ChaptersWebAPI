@@ -4,16 +4,29 @@ using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.BookSpecs;
+using Chapters.Specifications.UserBookSpecs;
+using Chapters.Specifications.UserChapterSpecs;
+using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
 
 public class BookService : IBookService
 {
     private readonly IRepository<Book> _bookRepository;
+    private readonly IRepository<UserBook> _userBookRepository;
+    private readonly IRepository<UserChapter> _userChapterRepository;
+    private readonly IRepository<User> _userRepository;
 
-    public BookService(IRepository<Book> bookRepository)
+    public BookService(
+        IRepository<Book> bookRepository,
+        IRepository<UserBook> userBookRepository,
+        IRepository<UserChapter> userChapterRepository,
+        IRepository<User> userRepository)
     {
         _bookRepository = bookRepository;
+        _userBookRepository = userBookRepository;
+        _userChapterRepository = userChapterRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<List<GetBookResponse>> GetBooks(GetBooksRequest booksRequest)
@@ -38,6 +51,45 @@ public class BookService : IBookService
         var book = await _bookRepository.FirstAsync(new BookWithUserBooksSpec(getBookRequest.BookId));
 
         return GetBookResponse(getBookRequest.Username, book);
+    }
+
+    public async Task ChangeBookStatus(ChangeBookStatusRequest changeBookStatusRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(changeBookStatusRequest.Username!));
+
+        var userBook = await _userBookRepository
+            .FirstOrDefaultAsync(new UserBookSpec(user.Id, changeBookStatusRequest.BookId));
+
+        if (userBook is null && changeBookStatusRequest.NewStatus != BookStatus.NotStarted)
+        {
+            userBook = new UserBook
+            {
+                BookId = changeBookStatusRequest.BookId,
+                UserId = user.Id,
+                BookStatus = changeBookStatusRequest.NewStatus
+            };
+
+            await _userBookRepository.AddAsync(userBook);
+            return;
+        }
+
+        if (userBook is null)
+        {
+            return;
+        }
+
+        if (changeBookStatusRequest.NewStatus == BookStatus.NotStarted)
+        {
+            await _userChapterRepository
+                .DeleteRangeAsync(new UserChaptersSpec(user.Id, changeBookStatusRequest.BookId));
+
+            await _userBookRepository.DeleteAsync(userBook);
+            return;
+        }
+
+        userBook.BookStatus = changeBookStatusRequest.NewStatus;
+
+        await _userBookRepository.SaveChangesAsync();
     }
 
     private static GetBookResponse GetBookResponse(string? username, Book book)

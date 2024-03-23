@@ -34,7 +34,19 @@ public class BooksController
         return await _bookService.GetBook(new GetBookRequest { Username = username?.Value, BookId = bookId });
     }
 
-    // TODO: менять статус
+    [HttpPost("{bookId:int}")]
+    public async Task ChangeBookStatus(int bookId, [FromBody] BookStatus bookStatus)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _bookService.ChangeBookStatus(
+            new ChangeBookStatusRequest
+            {
+                Username = username?.Value,
+                BookId = bookId,
+                NewStatus = bookStatus
+            });
+    }
 
     // TODO: оценивать книги
 
