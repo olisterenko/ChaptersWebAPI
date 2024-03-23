@@ -6,7 +6,7 @@ namespace Chapters.Services.Interfaces;
 public interface IChapterService
 {
     Task<List<GetChapterResponse>> GetChapters(GetChaptersRequest chaptersRequest);
-    Task MarkChapter(MarkChapterRequest markChapterRequest);
+    Task MarkChapter(MarkChapterRequest markChapterRequest, int rating);
     Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest);
     Task RateChapter(RateChapterRequest rateChapterRequest);
 }

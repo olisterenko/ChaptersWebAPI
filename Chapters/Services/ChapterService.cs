@@ -42,7 +42,7 @@ public class ChapterService : IChapterService
             .ToList();
     }
 
-    public async Task MarkChapter(MarkChapterRequest markChapterRequest)
+    public async Task MarkChapter(MarkChapterRequest markChapterRequest, int rating = 0)
     {
         var user = await _userRepository.FirstAsync(new UserWithChaptersSpec(markChapterRequest.Username));
 
@@ -50,11 +50,18 @@ public class ChapterService : IChapterService
         {
             ChapterId = markChapterRequest.ChapterId,
             UserId = user.Id,
+            UserRating = rating,
             IsRead = true,
             ReadTime = DateTimeOffset.UtcNow
         };
 
         await _userChapterRepository.AddAsync(userChapter);
+        await _activityService.SaveReadChapterActivity(user.Id, userChapter.ChapterId);
+
+        if (userChapter.UserRating != 0)
+        {
+            await _activityService.SaveRateChapterActivity(user.Id, userChapter.ChapterId, userChapter.UserRating);
+        }
 
         var chapter = await _chapterRepository.GetByIdAsync(markChapterRequest.ChapterId);
         var userBook = await _userBookRepository
@@ -70,6 +77,7 @@ public class ChapterService : IChapterService
             };
 
             await _userBookRepository.AddAsync(userBook);
+            await _activityService.SaveChangeStatusActivity(user.Id, userBook.BookId, userBook.BookStatus);
         }
 
         var readChapters = user.UserChapters
@@ -81,9 +89,8 @@ public class ChapterService : IChapterService
             userBook.BookStatus = BookStatus.Finished;
 
             await _userBookRepository.SaveChangesAsync();
+            await _activityService.SaveChangeStatusActivity(user.Id, userBook.BookId, userBook.BookStatus);
         }
-
-        await _activityService.SaveChangeStatusActivity(user.Id, userBook.BookId, userBook.BookStatus);
     }
 
     public async Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest)
@@ -116,18 +123,14 @@ public class ChapterService : IChapterService
 
         if (userChapter is null && rateChapterRequest.NewRating != 0)
         {
-            userChapter = new UserChapter
-            {
-                ChapterId = rateChapterRequest.ChapterId,
-                UserId = user.Id,
-                UserRating = rateChapterRequest.NewRating,
-                IsRead = true,
-                ReadTime = DateTimeOffset.UtcNow
-            };
-
-            await _userChapterRepository.AddAsync(userChapter);
-            // TODO: await _activityService.SaveReadChapterActivity(user.Id, userChapter.ChapterId);
-            await _activityService.SaveRateChapterActivity(user.Id, userChapter.ChapterId, userChapter.UserRating);
+            await MarkChapter(
+                new MarkChapterRequest
+                {
+                    ChapterId = rateChapterRequest.ChapterId,
+                    Username = rateChapterRequest.Username!
+                },
+                rateChapterRequest.NewRating
+            );
 
             return;
         }

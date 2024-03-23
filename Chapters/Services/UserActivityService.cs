@@ -121,7 +121,20 @@ public class UserActivityService : IUserActivityService
         await _userActivityRepository.AddAsync(userActivity);
     }
 
-    // TODO: прочтение главы
+    public async Task SaveReadChapterActivity(int userId, int chapterId)
+    {
+        var chapter = await _chapterRepository.FirstAsync(new ChapterSpec(chapterId));
+        var book = await _bookRepository.FirstAsync(new BookSpec(chapter.BookId));
+
+        var userActivity = new UserActivity
+        {
+            Text = $"Прочитывает главу {chapter.Title} книги {book.Title}.",
+            UserId = userId,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _userActivityRepository.AddAsync(userActivity);
+    }
     // TODO: написание коммента
     // TODO: написание рецензии
 }
