@@ -13,15 +13,18 @@ public class CommentService : ICommentService
     private readonly IRepository<Comment> _commentRepository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<UserRatingComment> _userRatingCommentRepository;
+    private readonly UserActivityService _activityService;
 
     public CommentService(
         IRepository<Comment> commentRepository,
         IRepository<User> userRepository,
-        IRepository<UserRatingComment> userRatingCommentRepository)
+        IRepository<UserRatingComment> userRatingCommentRepository, 
+        UserActivityService activityService)
     {
         _commentRepository = commentRepository;
         _userRepository = userRepository;
         _userRatingCommentRepository = userRatingCommentRepository;
+        _activityService = activityService;
     }
 
     public async Task<List<GetCommentResponse>> GetComments(GetCommentRequest commentRequest)
@@ -48,6 +51,7 @@ public class CommentService : ICommentService
         };
 
         await _commentRepository.AddAsync(comment);
+        await _activityService.SavePostCommentActivity(user.Id, comment.ChapterId);
     }
 
     public async Task<List<GetUserCommentResponse>> GetUserComments(GetUserCommentsRequest getUserCommentsRequest)

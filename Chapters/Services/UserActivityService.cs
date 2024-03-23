@@ -135,6 +135,20 @@ public class UserActivityService : IUserActivityService
 
         await _userActivityRepository.AddAsync(userActivity);
     }
-    // TODO: написание коммента
+
+    public async Task SavePostCommentActivity(int userId, int chapterId)
+    {
+        var chapter = await _chapterRepository.FirstAsync(new ChapterSpec(chapterId));
+        var book = await _bookRepository.FirstAsync(new BookSpec(chapter.BookId));
+
+        var userActivity = new UserActivity
+        {
+            Text = $"Пишет комментарий к главе {chapter.Title} книги {book.Title}.",
+            UserId = userId,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _userActivityRepository.AddAsync(userActivity);
+    }
     // TODO: написание рецензии
 }
