@@ -16,7 +16,7 @@ public class BookService : IBookService
         _bookRepository = bookRepository;
     }
 
-    public async Task<List<GetBooksResponse>> GetBooks(GetBooksRequest booksRequest)
+    public async Task<List<GetBookResponse>> GetBooks(GetBooksRequest booksRequest)
     {
         List<Book> books;
         if (booksRequest is { Username: not null, BookStatus: not null })
@@ -25,30 +25,37 @@ public class BookService : IBookService
         }
         else
         {
-            books = await _bookRepository.ListAsync(new BooksForRatingSpec());
+            books = await _bookRepository.ListAsync(new BooksForTopSpec());
         }
 
         return books
-            .Select(book => GetBookResponse(booksRequest, book))
+            .Select(book => GetBookResponse(booksRequest.Username, book))
             .ToList();
     }
 
-    private GetBooksResponse GetBookResponse(GetBooksRequest getBooksRequest, Book book)
+    public async Task<GetBookResponse> GetBook(GetBookRequest getBookRequest)
+    {
+        var book = await _bookRepository.FirstAsync(new BookWithUserBooksSpec(getBookRequest.BookId));
+
+        return GetBookResponse(getBookRequest.Username, book);
+    }
+
+    private static GetBookResponse GetBookResponse(string? username, Book book)
     {
         var bookStatus = BookStatus.NotStarted;
         var userRating = 0;
-        if (getBooksRequest.Username is not null)
+        if (username is not null)
         {
             bookStatus = book.UserBooks
-                .FirstOrDefault(u => u.User.Username == getBooksRequest.Username)?
+                .FirstOrDefault(u => u.User.Username == username)?
                 .BookStatus ?? BookStatus.NotStarted;
 
             userRating = book.UserBooks
-                .FirstOrDefault(u => u.User.Username == getBooksRequest.Username)?
+                .FirstOrDefault(u => u.User.Username == username)?
                 .UserRating ?? 0;
         }
 
-        return new GetBooksResponse(
+        return new GetBookResponse(
             Id: book.Id,
             Title: book.Title,
             Author: book.Author,

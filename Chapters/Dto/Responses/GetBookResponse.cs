@@ -2,7 +2,7 @@
 
 namespace Chapters.Dto.Responses;
 
-public sealed record GetBooksResponse(
+public sealed record GetBookResponse(
     int Id,
     string Title,
     string Author,

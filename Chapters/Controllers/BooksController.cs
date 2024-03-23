@@ -21,17 +21,22 @@ public class BooksController
     }
 
     [HttpGet]
-    public async Task<List<GetBooksResponse>> GetBooksWithUserDetails([FromQuery] BookStatus? bookStatus = null)
+    public async Task<List<GetBookResponse>> GetBooks([FromQuery] BookStatus? bookStatus = null)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
-        return await _bookService.GetBooks(new GetBooksRequest{Username = username?.Value, BookStatus = bookStatus});
+        return await _bookService.GetBooks(new GetBooksRequest { Username = username?.Value, BookStatus = bookStatus });
     }
-    
-    // TODO: информация об одной книге
-    
+
+    [HttpGet("{bookId:int}")]
+    public async Task<GetBookResponse> GetBook(int bookId)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+        return await _bookService.GetBook(new GetBookRequest { Username = username?.Value, BookId = bookId });
+    }
+
     // TODO: менять статус
-    
+
     // TODO: оценивать книги
-    
+
     // TODO: поиск
 }

@@ -5,5 +5,6 @@ namespace Chapters.Services.Interfaces;
 
 public interface IBookService
 {
-    Task<List<GetBooksResponse>> GetBooks(GetBooksRequest booksRequest);
+    Task<List<GetBookResponse>> GetBooks(GetBooksRequest booksRequest);
+    Task<GetBookResponse> GetBook(GetBookRequest getBookRequest);
 }

@@ -3,9 +3,9 @@ using Chapters.Domain.Entities;
 
 namespace Chapters.Specifications.BookSpecs;
 
-public sealed class BooksForRatingSpec : Specification<Book>
+public sealed class BooksForTopSpec : Specification<Book>
 {
-    public BooksForRatingSpec()
+    public BooksForTopSpec()
     {
         Query
             .OrderByDescending(x => x.Rating)
