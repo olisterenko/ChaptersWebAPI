@@ -41,6 +41,12 @@ public class CommentsController
         await _commentService.PostComment(username!.Value, postCommentRequest);
     }
 
-    // TODO: получать все комментарии одного пользователя [HttpPost("user")]
+    [HttpGet("user")]
+    public async Task<List<GetUserCommentResponse>> GetComments([FromBody] string author)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        return await _commentService.GetUserComments(new GetUserCommentsRequest{Author = author, Username = username?.Value});
+    }
     // TODO: менять рейтинг комментария
 }

@@ -46,6 +46,16 @@ public class CommentService : ICommentService
         await _commentRepository.AddAsync(comment);
     }
 
+    public async Task<List<GetUserCommentResponse>> GetUserComments(GetUserCommentsRequest getUserCommentsRequest)
+    {
+        var comments = await _commentRepository
+            .ListAsync(new CommentWithUserRatingSpec(getUserCommentsRequest.Author));
+
+        return comments
+            .Select(comment => GetUserCommentResponse(getUserCommentsRequest, comment))
+            .ToList();
+    }
+
     private GetCommentResponse GetCommentResponse(GetCommentRequest reviewsRequest, Comment comment)
     {
         var userRating = 0;
@@ -64,6 +74,31 @@ public class CommentService : ICommentService
             Rating: comment.UserRatingComments.Sum(ur => ur.UserRating),
             UserRating: userRating,
             CreatedAt: comment.CreatedAt
+        );
+    }
+    
+    private GetUserCommentResponse GetUserCommentResponse(GetUserCommentsRequest reviewsRequest, Comment comment)
+    {
+        var userRating = 0;
+        if (reviewsRequest.Username is not null)
+        {
+            userRating = comment.UserRatingComments
+                .FirstOrDefault(ur => ur.User.Username == reviewsRequest.Username)?
+                .UserRating ?? 0;
+        }
+
+        return new GetUserCommentResponse(
+            Id: comment.Id,
+            AuthorId: comment.AuthorId,
+            AuthorUsername: comment.Author.Username,
+            Text: comment.Text,
+            Rating: comment.UserRatingComments.Sum(ur => ur.UserRating),
+            UserRating: userRating,
+            CreatedAt: comment.CreatedAt,
+            ChapterId: comment.ChapterId,
+            ChapterTitle: comment.Chapter.Title,
+            BookId: comment.Chapter.BookId,
+            BookTitle: comment.Chapter.Book.Title
         );
     }
 }
