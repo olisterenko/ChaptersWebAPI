@@ -5,7 +5,7 @@ namespace Chapters.Controllers;
 
 [ApiController]
 [Route("/api/test")]
-public class TestController : ControllerBase
+public class AuthenticationController : ControllerBase
 {
     [HttpPost]
     [Authorize]
