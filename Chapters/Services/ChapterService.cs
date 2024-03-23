@@ -84,10 +84,20 @@ public class ChapterService : IChapterService
     public async Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest)
     {
         var user = await _userRepository.FirstAsync(new UserSpec(unmarkChapterRequest.Username));
-        var chapter = await _userChapterRepository
+        var userChapter = await _userChapterRepository
             .FirstAsync(new UserChapterSpec(user.Id, unmarkChapterRequest.ChapterId));
         
-        await _userChapterRepository.DeleteAsync(chapter);
+        var chapter = await _chapterRepository.GetByIdAsync(userChapter.ChapterId);
+        var userBook = await _userBookRepository
+            .FirstAsync(new UserBookSpec(user.Id, chapter.BookId));
+
+        if (userBook.BookStatus == BookStatus.Finished)
+        {
+            userBook.BookStatus = BookStatus.Reading;
+        }
+        
+        await _userChapterRepository.DeleteAsync(userChapter);
+        await _userBookRepository.SaveChangesAsync();
     }
 
     public async Task RateChapter(RateChapterRequest rateChapterRequest)
