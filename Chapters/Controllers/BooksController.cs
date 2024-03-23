@@ -34,7 +34,7 @@ public class BooksController
         return await _bookService.GetBook(new GetBookRequest { Username = username?.Value, BookId = bookId });
     }
 
-    [HttpPost("{bookId:int}")]
+    [HttpPost("{bookId:int}/status")]
     public async Task ChangeBookStatus(int bookId, [FromBody] BookStatus bookStatus)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
@@ -48,7 +48,19 @@ public class BooksController
             });
     }
 
-    // TODO: оценивать книги
+    [HttpPost("{bookId:int}/rating")]
+    public async Task RateBook(int bookId, [FromBody] int rating)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _bookService.RateBook(
+            new RateBookRequest
+            {
+                Username = username?.Value,
+                BookId = bookId,
+                NewRating = rating
+            });
+    }
 
     // TODO: поиск
 }

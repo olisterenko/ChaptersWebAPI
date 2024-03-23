@@ -92,6 +92,37 @@ public class BookService : IBookService
         await _userBookRepository.SaveChangesAsync();
     }
 
+    public async Task RateBook(RateBookRequest rateBookRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(rateBookRequest.Username!));
+
+        var userBook = await _userBookRepository
+            .FirstOrDefaultAsync(new UserBookSpec(user.Id, rateBookRequest.BookId));
+
+        if (userBook is null && rateBookRequest.NewRating != 0)
+        {
+            userBook = new UserBook
+            {
+                BookId = rateBookRequest.BookId,
+                UserId = user.Id,
+                UserRating = rateBookRequest.NewRating,
+                BookStatus = BookStatus.Reading
+            };
+
+            await _userBookRepository.AddAsync(userBook);
+            return;
+        }
+
+        if (userBook is null)
+        {
+            return;
+        }
+
+        userBook.UserRating = rateBookRequest.NewRating;
+
+        await _userBookRepository.SaveChangesAsync();
+    }
+
     private static GetBookResponse GetBookResponse(string? username, Book book)
     {
         var bookStatus = BookStatus.NotStarted;
