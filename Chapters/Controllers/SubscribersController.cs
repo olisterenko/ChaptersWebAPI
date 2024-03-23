@@ -25,11 +25,18 @@ public class SubscribersController
     }
     
     [HttpPost]
-    public async Task GetSubscriptions([FromBody] int userId)
+    public async Task Subscribe([FromBody] int userId)
     {
-        var subscribeUsername = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        var subscriberUsername = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
         
-        await _subscriberService.Subscribe(subscribeUsername!, userId);
+        await _subscriberService.Subscribe(subscriberUsername!, userId);
     }
-    // TODO: уметь отписываться
+    
+    [HttpDelete]
+    public async Task Unsubscribe([FromBody] int userId)
+    {
+        var subscriberUsername = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        
+        await _subscriberService.Unsubscribe(subscriberUsername!, userId);
+    }
 }

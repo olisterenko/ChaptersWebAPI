@@ -38,16 +38,23 @@ public class SubscriberService : ISubscriberService
             .ToList();
     }
 
-    public async Task Subscribe(string subscribeUsername, int userId)
+    public async Task Subscribe(string subscriberUsername, int userId)
     {
-        var user = await _userRepository.FirstAsync(new UserSpec(subscribeUsername));
+        var subscriber = await _userRepository.FirstAsync(new UserSpec(subscriberUsername));
 
         var userSubscriber = new UserSubscriber
         {
-            SubscriberId = user.Id,
+            SubscriberId = subscriber.Id,
             UserId = userId
         };
 
         await _userSubscriberRepository.AddAsync(userSubscriber);
+    }
+
+    public async Task Unsubscribe(string subscriberUsername, int userId)
+    {
+        var subscriber = await _userRepository.FirstAsync(new UserSpec(subscriberUsername));
+
+        await _userSubscriberRepository.DeleteRangeAsync(new SubscriptionSpec(subscriber.Id, userId));
     }
 }
