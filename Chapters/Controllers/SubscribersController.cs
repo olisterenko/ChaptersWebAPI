@@ -24,6 +24,12 @@ public class SubscribersController
         return await _subscriberService.GetSubscriptions(username);
     }
     
-    // TODO: уметь подписываться
+    [HttpPost]
+    public async Task GetSubscriptions([FromBody] int userId)
+    {
+        var subscribeUsername = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        
+        await _subscriberService.Subscribe(subscribeUsername!, userId);
+    }
     // TODO: уметь отписываться
 }
