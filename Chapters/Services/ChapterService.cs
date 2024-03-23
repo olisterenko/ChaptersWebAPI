@@ -61,6 +61,38 @@ public class ChapterService : IChapterService
         await _userChapterRepository.DeleteAsync(chapter);
     }
 
+    public async Task RateChapter(RateChapterRequest rateChapterRequest)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(rateChapterRequest.Username!));
+
+        var userChapter = await _userChapterRepository
+            .FirstOrDefaultAsync(new UserChapterSpec(user.Id, rateChapterRequest.ChapterId));
+
+        if (userChapter is null && rateChapterRequest.NewRating != 0)
+        {
+            userChapter = new UserChapter
+            {
+                ChapterId = rateChapterRequest.ChapterId,
+                UserId = user.Id,
+                UserRating = rateChapterRequest.NewRating,
+                IsRead = true,
+                ReadTime = DateTimeOffset.UtcNow
+            };
+
+            await _userChapterRepository.AddAsync(userChapter);
+            return;
+        }
+
+        if (userChapter is null)
+        {
+            return;
+        }
+
+        userChapter.UserRating = rateChapterRequest.NewRating;
+
+        await _userChapterRepository.SaveChangesAsync();
+    }
+
     private GetChapterResponse GetChapterResponse(GetChaptersRequest chaptersRequest, Chapter chapter)
     {
         var isRead = false;

@@ -61,5 +61,17 @@ public class ChaptersController
         );
     }
     
-    // TODO: оценивать главы
+    [HttpPost("{chapterId:int}/rating")]
+    public async Task RateChapter(int chapterId, [FromBody] int rating)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _chapterService.RateChapter(
+            new RateChapterRequest
+            {
+                Username = username?.Value,
+                ChapterId = chapterId,
+                NewRating = rating
+            });
+    }
 }

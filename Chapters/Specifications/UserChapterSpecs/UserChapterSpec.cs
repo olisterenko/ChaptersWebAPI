@@ -3,7 +3,7 @@ using Chapters.Domain.Entities;
 
 namespace Chapters.Specifications.UserChapterSpecs;
 
-public class UserChapterSpec : Specification<UserChapter>, ISingleResultSpecification<UserChapter>
+public sealed class UserChapterSpec : Specification<UserChapter>, ISingleResultSpecification<UserChapter>
 {
     public UserChapterSpec(int userId, int chapterId)
     {
