@@ -8,4 +8,5 @@ public interface IReviewService
     Task<List<GetReviewResponse>> GetReviews(GetReviewsRequest reviewsRequest);
     Task PostReview(string username, PostReviewRequest postReviewRequest);
     Task<List<GetUserReviewResponse>> GetUserReviews(GetUserReviewRequest getUserReviewRequest);
+    Task RateReview(string username, int reviewId, bool isPositive);
 }

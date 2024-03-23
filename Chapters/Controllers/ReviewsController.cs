@@ -19,7 +19,7 @@ public class ReviewsController
         _reviewService = reviewService;
     }
 
-    [HttpGet("{bookId}")]
+    [HttpGet("{bookId:int}")]
     public async Task<List<GetReviewResponse>> GetReviews(int bookId)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
@@ -54,5 +54,11 @@ public class ReviewsController
             });
     }
 
-    // TODO: менять рейтинг ревью
+    [HttpPost("{reviewId:int}")]
+    public async Task RateReview(int reviewId, [FromBody] bool isPositive)
+    {
+        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
+
+        await _reviewService.RateReview(username!.Value, reviewId, isPositive);
+    }
 }

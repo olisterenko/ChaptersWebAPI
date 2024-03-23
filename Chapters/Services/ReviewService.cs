@@ -4,6 +4,7 @@ using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
 using Chapters.Specifications.ReviewSpecs;
 using Chapters.Specifications.UserBookSpecs;
+using Chapters.Specifications.UserRatingReviewSpecs;
 using Chapters.Specifications.UserSpecs;
 
 namespace Chapters.Services;
@@ -13,15 +14,18 @@ public class ReviewService : IReviewService
     private readonly IRepository<Review> _reviewRepository;
     private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<User> _userRepository;
+    private readonly IRepository<UserRatingReview> _userRatingReviewRepository;
 
     public ReviewService(
         IRepository<Review> reviewRepository,
         IRepository<UserBook> userBookRepository,
-        IRepository<User> userRepository)
+        IRepository<User> userRepository, 
+        IRepository<UserRatingReview> userRatingReviewRepository)
     {
         _reviewRepository = reviewRepository;
         _userBookRepository = userBookRepository;
         _userRepository = userRepository;
+        _userRatingReviewRepository = userRatingReviewRepository;
     }
 
     public async Task<List<GetReviewResponse>> GetReviews(GetReviewsRequest reviewsRequest)
@@ -69,6 +73,30 @@ public class ReviewService : IReviewService
         }
 
         return responses;
+    }
+
+    public async Task RateReview(string username, int reviewId, bool isPositive)
+    {
+        var user = await _userRepository.FirstAsync(new UserSpec(username));
+
+        var userRatingReview =
+            await _userRatingReviewRepository.FirstOrDefaultAsync(new UserRatingReviewSpec(user.Id, reviewId));
+
+        if (userRatingReview is null)
+        {
+            userRatingReview = new UserRatingReview
+            {
+                ReviewId = reviewId,
+                UserId = user.Id,
+                UserRating = isPositive ? 1 : -1
+            };
+
+            await _userRatingReviewRepository.AddAsync(userRatingReview);
+        }
+
+        userRatingReview.UserRating = isPositive ? 1 : -1;
+
+        await _userRatingReviewRepository.SaveChangesAsync();
     }
 
     private async Task<GetReviewResponse> GetReviewResponse(GetReviewsRequest reviewsRequest, Review review)
