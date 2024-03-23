@@ -16,17 +16,19 @@ public class BookService : IBookService
     private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
+    private readonly UserActivityService _activityService;
 
     public BookService(
         IRepository<Book> bookRepository,
         IRepository<UserBook> userBookRepository,
         IRepository<UserChapter> userChapterRepository,
-        IRepository<User> userRepository)
+        IRepository<User> userRepository, UserActivityService activityService)
     {
         _bookRepository = bookRepository;
         _userBookRepository = userBookRepository;
         _userChapterRepository = userChapterRepository;
         _userRepository = userRepository;
+        _activityService = activityService;
     }
 
     public async Task<List<GetBookResponse>> GetBooks(GetBooksRequest booksRequest)
@@ -70,6 +72,11 @@ public class BookService : IBookService
             };
 
             await _userBookRepository.AddAsync(userBook);
+            await _activityService.SaveChangeStatusActivity(
+                user.Id,
+                changeBookStatusRequest.BookId,
+                changeBookStatusRequest.NewStatus);
+
             return;
         }
 
@@ -84,12 +91,22 @@ public class BookService : IBookService
                 .DeleteRangeAsync(new UserChaptersSpec(user.Id, changeBookStatusRequest.BookId));
 
             await _userBookRepository.DeleteAsync(userBook);
+
+            await _activityService.SaveChangeStatusActivity(
+                user.Id,
+                changeBookStatusRequest.BookId,
+                changeBookStatusRequest.NewStatus);
+
             return;
         }
 
         userBook.BookStatus = changeBookStatusRequest.NewStatus;
-
         await _userBookRepository.SaveChangesAsync();
+
+        await _activityService.SaveChangeStatusActivity(
+            user.Id,
+            changeBookStatusRequest.BookId,
+            changeBookStatusRequest.NewStatus);
     }
 
     public async Task RateBook(RateBookRequest rateBookRequest)

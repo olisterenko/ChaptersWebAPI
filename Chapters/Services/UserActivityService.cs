@@ -1,6 +1,8 @@
 ﻿using Chapters.Domain.Entities;
+using Chapters.Domain.Enums;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Chapters.Specifications.BookSpecs;
 using Chapters.Specifications.UserSpecs;
 using Chapters.Specifications.UserSubscriberSpecs;
 
@@ -11,15 +13,18 @@ public class UserActivityService : IUserActivityService
     private readonly IRepository<UserActivity> _userActivityRepository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<UserSubscriber> _userSubscriberRepository;
+    private readonly IRepository<Book> _bookRepository;
 
     public UserActivityService(
         IRepository<UserActivity> userActivityRepository,
         IRepository<User> userRepository,
-        IRepository<UserSubscriber> userSubscriberRepository)
+        IRepository<UserSubscriber> userSubscriberRepository,
+        IRepository<Book> bookRepository)
     {
         _userActivityRepository = userActivityRepository;
         _userRepository = userRepository;
         _userSubscriberRepository = userSubscriberRepository;
+        _bookRepository = bookRepository;
     }
 
     public async Task<List<GetUserActivityResponse>> GetUserActivities(string username)
@@ -59,4 +64,37 @@ public class UserActivityService : IUserActivityService
             ))
             .ToList();
     }
+
+    public async Task SaveChangeStatusActivity(
+        int userId,
+        int bookId,
+        BookStatus bookStatus)
+    {
+        var book = await _bookRepository.FirstAsync(new BookSpec(bookId));
+
+        var text = bookStatus switch
+        {
+            BookStatus.Finished => $"заканчивает читать книгу {book.Title}.",
+            BookStatus.Reading => $"читает книгу {book.Title}.",
+            BookStatus.WillRead => $"будет читать книгу {book.Title}.",
+            BookStatus.StopReading => $"перестает читать книгу {book.Title}.",
+            _ => $"не читает книгу {book.Title}."
+        };
+
+        var userActivity = new UserActivity
+        {
+            Text = text,
+            UserId = userId,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _userActivityRepository.AddAsync(userActivity);
+    }
+
+    // TODO: оценивание книги
+    // TODO: прочтение книги
+    // TODO: оценивание главы
+    // TODO: прочтение главы
+    // TODO: написание коммента
+    // TODO: написание рецензии
 }

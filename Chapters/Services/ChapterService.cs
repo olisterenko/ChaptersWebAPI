@@ -16,17 +16,20 @@ public class ChapterService : IChapterService
     private readonly IRepository<Chapter> _chapterRepository;
     private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
+    private readonly UserActivityService _activityService;
 
     public ChapterService(
         IRepository<UserBook> userBookRepository,
         IRepository<Chapter> chapterRepository,
         IRepository<UserChapter> userChapterRepository,
-        IRepository<User> userRepository)
+        IRepository<User> userRepository,
+        UserActivityService activityService)
     {
         _userBookRepository = userBookRepository;
         _chapterRepository = chapterRepository;
         _userChapterRepository = userChapterRepository;
         _userRepository = userRepository;
+        _activityService = activityService;
     }
 
     public async Task<List<GetChapterResponse>> GetChapters(GetChaptersRequest chaptersRequest)
@@ -86,7 +89,7 @@ public class ChapterService : IChapterService
         var user = await _userRepository.FirstAsync(new UserSpec(unmarkChapterRequest.Username));
         var userChapter = await _userChapterRepository
             .FirstAsync(new UserChapterSpec(user.Id, unmarkChapterRequest.ChapterId));
-        
+
         var chapter = await _chapterRepository.GetByIdAsync(userChapter.ChapterId);
         var userBook = await _userBookRepository
             .FirstAsync(new UserBookSpec(user.Id, chapter.BookId));
@@ -94,10 +97,15 @@ public class ChapterService : IChapterService
         if (userBook.BookStatus == BookStatus.Finished)
         {
             userBook.BookStatus = BookStatus.Reading;
+            await _userBookRepository.SaveChangesAsync();
+
+            await _activityService.SaveChangeStatusActivity(
+                user.Id,
+                userBook.BookId,
+                userBook.BookStatus);
         }
-        
+
         await _userChapterRepository.DeleteAsync(userChapter);
-        await _userBookRepository.SaveChangesAsync();
     }
 
     public async Task RateChapter(RateChapterRequest rateChapterRequest)
