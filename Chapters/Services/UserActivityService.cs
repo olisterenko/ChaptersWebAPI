@@ -102,7 +102,6 @@ public class UserActivityService : IUserActivityService
         await _userActivityRepository.AddAsync(userActivity);
     }
 
-    // TODO: прочтение книги
     // TODO: оценивание главы
     // TODO: прочтение главы
     // TODO: написание коммента

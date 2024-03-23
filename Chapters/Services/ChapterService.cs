@@ -82,6 +82,8 @@ public class ChapterService : IChapterService
 
             await _userBookRepository.SaveChangesAsync();
         }
+
+        await _activityService.SaveChangeStatusActivity(user.Id, userBook.BookId, userBook.BookStatus);
     }
 
     public async Task UnmarkChapter(UnmarkChapterRequest unmarkChapterRequest)
