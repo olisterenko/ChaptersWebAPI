@@ -65,20 +65,17 @@ public class UserActivityService : IUserActivityService
             .ToList();
     }
 
-    public async Task SaveChangeStatusActivity(
-        int userId,
-        int bookId,
-        BookStatus bookStatus)
+    public async Task SaveChangeStatusActivity(int userId, int bookId, BookStatus bookStatus)
     {
         var book = await _bookRepository.FirstAsync(new BookSpec(bookId));
 
         var text = bookStatus switch
         {
-            BookStatus.Finished => $"заканчивает читать книгу {book.Title}.",
-            BookStatus.Reading => $"читает книгу {book.Title}.",
-            BookStatus.WillRead => $"будет читать книгу {book.Title}.",
-            BookStatus.StopReading => $"перестает читать книгу {book.Title}.",
-            _ => $"не читает книгу {book.Title}."
+            BookStatus.Finished => $"Заканчивает читать книгу {book.Title}.",
+            BookStatus.Reading => $"Читает книгу {book.Title}.",
+            BookStatus.WillRead => $"Будет читать книгу {book.Title}.",
+            BookStatus.StopReading => $"Перестает читать книгу {book.Title}.",
+            _ => $"Не читает книгу {book.Title}."
         };
 
         var userActivity = new UserActivity
@@ -91,7 +88,20 @@ public class UserActivityService : IUserActivityService
         await _userActivityRepository.AddAsync(userActivity);
     }
 
-    // TODO: оценивание книги
+    public async Task SaveRateBookActivity(int userId, int bookId, int rating)
+    {
+        var book = await _bookRepository.FirstAsync(new BookSpec(bookId));
+
+        var userActivity = new UserActivity
+        {
+            Text = $"ставит {rating} книге {book.Title}.",
+            UserId = userId,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        await _userActivityRepository.AddAsync(userActivity);
+    }
+
     // TODO: прочтение книги
     // TODO: оценивание главы
     // TODO: прочтение главы

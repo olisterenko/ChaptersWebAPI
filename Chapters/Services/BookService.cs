@@ -127,6 +127,11 @@ public class BookService : IBookService
             };
 
             await _userBookRepository.AddAsync(userBook);
+            await _activityService.SaveRateBookActivity(
+                user.Id,
+                rateBookRequest.BookId,
+                rateBookRequest.NewRating);
+
             return;
         }
 
@@ -138,6 +143,10 @@ public class BookService : IBookService
         userBook.UserRating = rateBookRequest.NewRating;
 
         await _userBookRepository.SaveChangesAsync();
+        await _activityService.SaveRateBookActivity(
+            user.Id,
+            rateBookRequest.BookId,
+            rateBookRequest.NewRating);
     }
 
     public async Task<List<GetBookResponse>> SearchBooks(SearchBooksRequest searchBooksRequest)
