@@ -36,7 +36,8 @@ public class BookService : IBookService
         List<Book> books;
         if (booksRequest is { Username: not null, BookStatus: not null })
         {
-            books = await _bookRepository.ListAsync(new BooksByBookStatusSpec(booksRequest.BookStatus.Value));
+            books = await _bookRepository
+                .ListAsync(new BooksByBookStatusSpec(booksRequest.BookStatus.Value, booksRequest.Username));
         }
         else
         {
