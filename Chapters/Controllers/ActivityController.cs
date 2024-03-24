@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -24,6 +25,7 @@ public class ActivityController
         return await _userActivityService.GetUserActivities(username);
     }
     
+    [Authorize]
     [HttpGet]
     public async Task<List<GetUserActivityResponse>> GetSubscriptionsActivities()
     {

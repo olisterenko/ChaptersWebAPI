@@ -16,14 +16,14 @@ public class ChapterService : IChapterService
     private readonly IRepository<Chapter> _chapterRepository;
     private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
-    private readonly UserActivityService _activityService;
+    private readonly IUserActivityService _activityService;
 
     public ChapterService(
         IRepository<UserBook> userBookRepository,
         IRepository<Chapter> chapterRepository,
         IRepository<UserChapter> userChapterRepository,
         IRepository<User> userRepository,
-        UserActivityService activityService)
+        IUserActivityService activityService)
     {
         _userBookRepository = userBookRepository;
         _chapterRepository = chapterRepository;

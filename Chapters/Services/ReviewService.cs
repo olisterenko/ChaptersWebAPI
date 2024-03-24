@@ -15,14 +15,14 @@ public class ReviewService : IReviewService
     private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<UserRatingReview> _userRatingReviewRepository;
-    private readonly UserActivityService _activityService;
+    private readonly IUserActivityService _activityService;
 
     public ReviewService(
         IRepository<Review> reviewRepository,
         IRepository<UserBook> userBookRepository,
         IRepository<User> userRepository,
         IRepository<UserRatingReview> userRatingReviewRepository,
-        UserActivityService activityService)
+        IUserActivityService activityService)
     {
         _reviewRepository = reviewRepository;
         _userBookRepository = userBookRepository;

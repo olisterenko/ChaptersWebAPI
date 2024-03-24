@@ -3,6 +3,7 @@ using Chapters.Domain.Enums;
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -34,6 +35,7 @@ public class BooksController
         return await _bookService.GetBook(new GetBookRequest { Username = username?.Value, BookId = bookId });
     }
 
+    [Authorize]
     [HttpPost("{bookId:int}/status")]
     public async Task ChangeBookStatus(int bookId, [FromBody] BookStatus bookStatus)
     {
@@ -48,6 +50,7 @@ public class BooksController
             });
     }
 
+    [Authorize]
     [HttpPost("{bookId:int}/rating")]
     public async Task RateBook(int bookId, [FromBody] int rating)
     {

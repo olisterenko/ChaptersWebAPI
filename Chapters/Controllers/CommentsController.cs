@@ -2,6 +2,7 @@
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -33,6 +34,7 @@ public class CommentsController
         );
     }
 
+    [Authorize]
     [HttpPost]
     public async Task PostComment(PostCommentRequest postCommentRequest)
     {
@@ -54,6 +56,7 @@ public class CommentsController
             });
     }
 
+    [Authorize]
     [HttpPost("{commentId:int}")]
     public async Task RateComment(int commentId, [FromBody] bool isPositive)
     {

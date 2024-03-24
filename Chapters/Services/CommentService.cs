@@ -13,13 +13,13 @@ public class CommentService : ICommentService
     private readonly IRepository<Comment> _commentRepository;
     private readonly IRepository<User> _userRepository;
     private readonly IRepository<UserRatingComment> _userRatingCommentRepository;
-    private readonly UserActivityService _activityService;
+    private readonly IUserActivityService _activityService;
 
     public CommentService(
         IRepository<Comment> commentRepository,
         IRepository<User> userRepository,
         IRepository<UserRatingComment> userRatingCommentRepository, 
-        UserActivityService activityService)
+        IUserActivityService activityService)
     {
         _commentRepository = commentRepository;
         _userRepository = userRepository;

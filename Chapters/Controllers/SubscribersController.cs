@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -24,6 +25,7 @@ public class SubscribersController
         return await _subscriberService.GetSubscriptions(username);
     }
     
+    [Authorize]
     [HttpPost]
     public async Task Subscribe([FromBody] int userId)
     {
@@ -32,6 +34,7 @@ public class SubscribersController
         await _subscriberService.Subscribe(subscriberUsername!, userId);
     }
     
+    [Authorize]
     [HttpDelete]
     public async Task Unsubscribe([FromBody] int userId)
     {

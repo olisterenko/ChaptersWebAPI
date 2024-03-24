@@ -2,6 +2,7 @@
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -33,6 +34,7 @@ public class ChaptersController
         );
     }
     
+    [Authorize]
     [HttpPost("{chapterId:int}")]
     public async Task MarkChapter(int chapterId)
     {
@@ -47,6 +49,7 @@ public class ChaptersController
         );
     }
     
+    [Authorize]
     [HttpDelete("{chapterId:int}")]
     public async Task UnmarkChapter(int chapterId)
     {
@@ -61,6 +64,7 @@ public class ChaptersController
         );
     }
     
+    [Authorize]
     [HttpPost("{chapterId:int}/rating")]
     public async Task RateChapter(int chapterId, [FromBody] int rating)
     {

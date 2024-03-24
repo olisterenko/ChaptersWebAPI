@@ -2,6 +2,7 @@
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
@@ -32,7 +33,8 @@ public class ReviewsController
             }
         );
     }
-    
+
+    [Authorize]
     [HttpPost]
     public async Task PostReview(PostReviewRequest postReviewRequest)
     {
@@ -40,7 +42,7 @@ public class ReviewsController
 
         await _reviewService.PostReview(username!.Value, postReviewRequest);
     }
-    
+
     [HttpGet("user")]
     public async Task<List<GetUserReviewResponse>> GetUserReviews([FromBody] string author)
     {
@@ -54,6 +56,7 @@ public class ReviewsController
             });
     }
 
+    [Authorize]
     [HttpPost("{reviewId:int}")]
     public async Task RateReview(int reviewId, [FromBody] bool isPositive)
     {

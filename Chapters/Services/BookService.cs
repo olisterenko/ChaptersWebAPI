@@ -16,13 +16,13 @@ public class BookService : IBookService
     private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
-    private readonly UserActivityService _activityService;
+    private readonly IUserActivityService _activityService;
 
     public BookService(
         IRepository<Book> bookRepository,
         IRepository<UserBook> userBookRepository,
         IRepository<UserChapter> userChapterRepository,
-        IRepository<User> userRepository, UserActivityService activityService)
+        IRepository<User> userRepository, IUserActivityService activityService)
     {
         _bookRepository = bookRepository;
         _userBookRepository = userBookRepository;
