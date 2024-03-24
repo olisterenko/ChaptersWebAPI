@@ -10,7 +10,6 @@ public sealed class SubscriptionsWithUserAndActivitiesSpec : Specification<UserS
         Query
             .Where(us => us.SubscriberId == subscriberId)
             .Include(us => us.User)
-            .ThenInclude(u => u.UserActivities)
-            .ThenInclude(ua => ua.User);
+            .ThenInclude(u => u.UserActivities);
     }
 }

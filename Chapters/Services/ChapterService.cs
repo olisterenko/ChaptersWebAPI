@@ -3,6 +3,7 @@ using Chapters.Domain.Enums;
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using Chapters.Specifications.BookSpecs;
 using Chapters.Specifications.ChapterSpecs;
 using Chapters.Specifications.UserBookSpecs;
 using Chapters.Specifications.UserChapterSpecs;
@@ -14,6 +15,7 @@ public class ChapterService : IChapterService
 {
     private readonly IRepository<UserBook> _userBookRepository;
     private readonly IRepository<Chapter> _chapterRepository;
+    private readonly IRepository<Book> _bookRepository;
     private readonly IRepository<UserChapter> _userChapterRepository;
     private readonly IRepository<User> _userRepository;
     private readonly IUserActivityService _activityService;
@@ -21,12 +23,14 @@ public class ChapterService : IChapterService
     public ChapterService(
         IRepository<UserBook> userBookRepository,
         IRepository<Chapter> chapterRepository,
+        IRepository<Book> bookRepository,
         IRepository<UserChapter> userChapterRepository,
         IRepository<User> userRepository,
         IUserActivityService activityService)
     {
         _userBookRepository = userBookRepository;
         _chapterRepository = chapterRepository;
+        _bookRepository = bookRepository;
         _userChapterRepository = userChapterRepository;
         _userRepository = userRepository;
         _activityService = activityService;
@@ -64,6 +68,7 @@ public class ChapterService : IChapterService
         }
 
         var chapter = await _chapterRepository.GetByIdAsync(markChapterRequest.ChapterId);
+        var book = await _bookRepository.FirstAsync(new BookWithChaptersSpec(chapter.BookId));
         var userBook = await _userBookRepository
             .FirstOrDefaultAsync(new UserBookWithBookSpec(user.Id, chapter.BookId));
 
@@ -84,7 +89,7 @@ public class ChapterService : IChapterService
             .Where(uc => uc.Chapter.BookId == chapter.BookId)
             .ToList();
 
-        if (readChapters.Count == userBook.Book.Chapters.Count)
+        if (readChapters.Count == book.Chapters.Count)
         {
             userBook.BookStatus = BookStatus.Finished;
 
