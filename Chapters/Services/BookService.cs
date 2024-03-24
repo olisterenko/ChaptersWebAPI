@@ -113,6 +113,12 @@ public class BookService : IBookService
     {
         var user = await _userRepository.FirstAsync(new UserSpec(rateBookRequest.Username!));
 
+        var book = await _bookRepository.FirstAsync(new BookWithUserBooksSpec(rateBookRequest.BookId));
+        var userBookCount = book.UserBooks.Count + 1;
+        var userRatingSum = book.UserBooks.Count != 0
+            ? (double)book.UserBooks.Sum(ub => ub.UserRating) + rateBookRequest.NewRating
+            : rateBookRequest.NewRating;
+
         var userBook = await _userBookRepository
             .FirstOrDefaultAsync(new UserBookSpec(user.Id, rateBookRequest.BookId));
 
@@ -126,11 +132,11 @@ public class BookService : IBookService
                 BookStatus = BookStatus.Reading
             };
 
+            book.Rating = userRatingSum / userBookCount;
+
             await _userBookRepository.AddAsync(userBook);
-            await _activityService.SaveRateBookActivity(
-                user.Id,
-                rateBookRequest.BookId,
-                rateBookRequest.NewRating);
+            await _activityService.SaveRateBookActivity(user.Id, rateBookRequest.BookId, rateBookRequest.NewRating);
+            await _bookRepository.SaveChangesAsync();
 
             return;
         }
@@ -141,6 +147,7 @@ public class BookService : IBookService
         }
 
         userBook.UserRating = rateBookRequest.NewRating;
+        book.Rating = userRatingSum / userBookCount;
 
         await _userBookRepository.SaveChangesAsync();
         await _activityService.SaveRateBookActivity(
