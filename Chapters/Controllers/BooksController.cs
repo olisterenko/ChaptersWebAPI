@@ -37,7 +37,7 @@ public class BooksController
 
     [Authorize]
     [HttpPost("{bookId:int}/status")]
-    public async Task ChangeBookStatus(int bookId, [FromBody] BookStatus bookStatus)
+    public async Task ChangeBookStatus(int bookId, [FromBody] string bookStatus)
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
@@ -46,7 +46,7 @@ public class BooksController
             {
                 Username = username?.Value,
                 BookId = bookId,
-                NewStatus = bookStatus
+                NewStatus = Enum.Parse<BookStatus>(bookStatus)
             });
     }
 
