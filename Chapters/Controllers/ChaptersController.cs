@@ -2,6 +2,7 @@
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
 using Chapters.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,16 @@ public class ChaptersController
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IChapterService _chapterService;
+    private readonly IValidator<int> _validator;
 
-    public ChaptersController(IHttpContextAccessor httpContextAccessor, IChapterService chapterService)
+    public ChaptersController(
+        IHttpContextAccessor httpContextAccessor,
+        IChapterService chapterService,
+        IValidator<int> validator)
     {
         _httpContextAccessor = httpContextAccessor;
         _chapterService = chapterService;
+        _validator = validator;
     }
 
     [HttpGet("{bookId:int}")]
@@ -33,7 +39,7 @@ public class ChaptersController
             }
         );
     }
-    
+
     [Authorize]
     [HttpPost("{chapterId:int}")]
     public async Task MarkChapter(int chapterId)
@@ -48,7 +54,7 @@ public class ChaptersController
             }
         );
     }
-    
+
     [Authorize]
     [HttpDelete("{chapterId:int}")]
     public async Task UnmarkChapter(int chapterId)
@@ -63,11 +69,13 @@ public class ChaptersController
             }
         );
     }
-    
+
     [Authorize]
     [HttpPost("{chapterId:int}/rating")]
     public async Task RateChapter(int chapterId, [FromBody] int rating)
     {
+        await _validator.ValidateAndThrowAsync(rating);
+
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
         await _chapterService.RateChapter(

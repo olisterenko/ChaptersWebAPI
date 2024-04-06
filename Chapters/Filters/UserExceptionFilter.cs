@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Chapters.Domain.Entities;
 using Chapters.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -11,13 +10,16 @@ public class UserExceptionFilter : ExceptionFilterAttribute
 {
     public override void OnException(ExceptionContext context)
     {
-        if (context.Exception is EntityNotFoundException<User>)
+        if (context.Exception is not EntityNotFoundException<User>)
         {
-            var result = new ContentResult
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest
-            };
-            context.Result = result;
+            return;
         }
+
+        var result = new ContentResult
+        {
+            StatusCode = (int)HttpStatusCode.BadRequest,
+            Content = "User with this username already exists"
+        };
+        context.Result = result;
     }
 }

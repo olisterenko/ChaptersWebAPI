@@ -10,6 +10,7 @@ public static class ValidatorsConfiguration
     public static IServiceCollection AddValidators(this IServiceCollection services)
     {
         services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
+        services.AddScoped<IValidator<int>, RatingValidator>();
         return services;
     }
 }

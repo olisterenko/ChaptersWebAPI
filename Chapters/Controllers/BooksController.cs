@@ -2,23 +2,31 @@
 using Chapters.Domain.Enums;
 using Chapters.Dto.Requests;
 using Chapters.Dto.Responses;
+using Chapters.Filters;
 using Chapters.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chapters.Controllers;
 
 [ApiController]
+[ValidationExceptionFilter]
 [Route("/api/books")]
 public class BooksController
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBookService _bookService;
+    private readonly IValidator<int> _validator;
 
-    public BooksController(IHttpContextAccessor httpContextAccessor, IBookService bookService)
+    public BooksController(
+        IHttpContextAccessor httpContextAccessor,
+        IBookService bookService,
+        IValidator<int> validator)
     {
         _httpContextAccessor = httpContextAccessor;
         _bookService = bookService;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -54,6 +62,8 @@ public class BooksController
     [HttpPost("{bookId:int}/rating")]
     public async Task RateBook(int bookId, [FromBody] int rating)
     {
+        await _validator.ValidateAndThrowAsync(rating);
+
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
 
         await _bookService.RateBook(

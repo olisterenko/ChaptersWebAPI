@@ -13,6 +13,5 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 
         RuleFor(x => x.Password)
             .NotEmpty();
-
     }
 }
