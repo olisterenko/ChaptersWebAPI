@@ -115,7 +115,7 @@ public class BookService : IBookService
         var user = await _userRepository.FirstAsync(new UserSpec(rateBookRequest.Username!));
 
         var book = await _bookRepository.FirstAsync(new BookWithUserBooksSpec(rateBookRequest.BookId));
-        var userBookCount = book.UserBooks.Count + 1;
+        var userBookCount = book.UserBooks.Count(userBook => userBook.UserRating != 0) + 1;
         var userRatingSum = book.UserBooks.Count != 0
             ? (double)book.UserBooks.Sum(ub => ub.UserRating) + rateBookRequest.NewRating
             : rateBookRequest.NewRating;
