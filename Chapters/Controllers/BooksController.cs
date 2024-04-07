@@ -30,10 +30,10 @@ public class BooksController
     }
 
     [HttpGet]
-    public async Task<List<GetBookResponse>> GetBooks([FromQuery] BookStatus? bookStatus = null)
+    public async Task<List<GetBookResponse>> GetBooks([FromQuery] string? name = null, [FromQuery] BookStatus? bookStatus = null)
     {
-        var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name);
-        return await _bookService.GetBooks(new GetBooksRequest { Username = username?.Value, BookStatus = bookStatus });
+        var username = name ?? _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        return await _bookService.GetBooks(new GetBooksRequest { Username = username, BookStatus = bookStatus });
     }
 
     [HttpGet("{bookId:int}")]
