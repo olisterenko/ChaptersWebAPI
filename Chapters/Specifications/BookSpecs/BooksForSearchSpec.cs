@@ -8,9 +8,8 @@ public sealed class BooksForSearchSpec : Specification<Book>
     public BooksForSearchSpec(string q)
     {
         Query
-            .Where(b => b.Title.Contains(q, StringComparison.InvariantCultureIgnoreCase))
+            .Where(b => b.Title.ToLower().Contains(q.ToLower()))
             .OrderByDescending(x => x.Rating)
-            .Take(500)
             .Include(x => x.UserBooks).ThenInclude(ub => ub.User);
     }
 }

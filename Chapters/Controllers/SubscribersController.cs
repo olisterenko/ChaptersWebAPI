@@ -42,4 +42,10 @@ public class SubscribersController
         
         await _subscriberService.Unsubscribe(subscriberUsername!, userId);
     }
+    
+    [HttpPost("search")]
+    public async Task<List<GetUsersResponse>> SearchUsers([FromQuery] string q)
+    {
+        return await _subscriberService.SearchUsers(q);
+    }
 }

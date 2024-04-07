@@ -57,4 +57,20 @@ public class SubscriberService : ISubscriberService
 
         await _userSubscriberRepository.DeleteRangeAsync(new SubscriptionSpec(subscriber.Id, userId));
     }
+
+    public async Task<List<GetUsersResponse>> SearchUsers(string q)
+    {
+       var users = await _userRepository.ListAsync(new UsersForSearchSpec(q));
+
+       return users
+           .Select(user => new GetUsersResponse(
+               UserId: user.Id,
+               Username: user.Username,
+               NumberOfBooks: user.UserBooks
+                   .Where(ub => ub.BookStatus == BookStatus.Finished)
+                   .ToList()
+                   .Count
+           ))
+           .ToList();
+    }
 }
