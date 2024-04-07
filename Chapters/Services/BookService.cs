@@ -187,7 +187,9 @@ public class BookService : IBookService
             Author: book.Author,
             Cover: book.Cover,
             Rating: book.UserBooks.Count != 0
-                ? book.UserBooks.Average(userBook => userBook.UserRating)
+                ? book.UserBooks
+                    .Where(userBook => userBook.UserRating != 0)
+                    .Average(userBook => userBook.UserRating)
                 : 0.0,
             BookStatus: bookStatus,
             UserRating: userRating

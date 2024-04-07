@@ -175,7 +175,9 @@ public class ChapterService : IChapterService
             Number: chapter.Number,
             Title: chapter.Title,
             Rating: ratingChapters.Count != 0
-                ? ratingChapters.Average(userChapter => userChapter.UserRating)
+                ? ratingChapters
+                    .Where(userChapter => userChapter.UserRating != 0)
+                    .Average(userChapter => userChapter.UserRating)
                 : 0.0,
             IsRead: isRead,
             UserRating: userRating
