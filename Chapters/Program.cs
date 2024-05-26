@@ -1,6 +1,9 @@
+using System.Text;
 using Chapters;
 using Chapters.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -13,10 +16,6 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwagger();
 
-services.AddAuthentication("BasicAuthentication")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
-services.AddAuthorization();
-
 services.AddDbContextWithRepositories(configuration);
 
 services.AddFluentMigrator(configuration);
@@ -26,6 +25,25 @@ services.ConfigureSettings(configuration);
 services.AddValidators();
 services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+services.AddAuthorization();
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JwtOptions:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JwtOptions:Audience"],
+            ValidateLifetime = true,
+            LifetimeValidator = (notBefore, expires, _, _) => notBefore <= DateTime.UtcNow &&
+                                                              expires > DateTime.UtcNow,
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(builder.Configuration["JwtOptions:Secret"]!)),
+            ValidateIssuerSigningKey = true,
+        };
+    });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,11 +53,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseRouting();
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.MigrateUp();

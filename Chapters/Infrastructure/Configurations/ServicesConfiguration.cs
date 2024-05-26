@@ -16,6 +16,8 @@ public static class ServicesConfiguration
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IUserActivityService, UserActivityService>();
         services.AddScoped<ISubscriberService, SubscriberService>();
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IAuthService, AuthService>();
         return services;
     }
 }
